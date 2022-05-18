@@ -15,13 +15,13 @@ using System.Drawing;
  */
  class SampleDungeonNodeGraph : NodeGraph
 {
-	protected Dungeon _dungeon;
+	protected DungeonBase dungeonBase;
 
-	public SampleDungeonNodeGraph(Dungeon pDungeon) : base((int)(pDungeon.size.Width * pDungeon.scale), (int)(pDungeon.size.Height * pDungeon.scale), (int)pDungeon.scale/3)
+	public SampleDungeonNodeGraph(DungeonBase pDungeonBase) : base((int)(pDungeonBase.size.Width * pDungeonBase.scale), (int)(pDungeonBase.size.Height * pDungeonBase.scale), (int)pDungeonBase.scale/3)
 	{
-		Debug.Assert(pDungeon != null, "Please pass in a dungeon.");
+		Debug.Assert(pDungeonBase != null, "Please pass in a dungeon.");
 
-		_dungeon = pDungeon;
+		dungeonBase = pDungeonBase;
 	}
 
 	protected override void generate ()
@@ -32,10 +32,10 @@ using System.Drawing;
 
 		//We assume (bad programming practice 1-o-1) there are two rooms in the given dungeon.
 		//The getRoomCenter is a convenience method to calculate the screen space center of a room
-		nodes.Add(new Node(getRoomCenter(_dungeon.rooms[0])));
-		nodes.Add(new Node(getRoomCenter(_dungeon.rooms[1])));
+		nodes.Add(new Node(getRoomCenter(dungeonBase.rooms[0])));
+		nodes.Add(new Node(getRoomCenter(dungeonBase.rooms[1])));
 		//The getDoorCenter is a convenience method to calculate the screen space center of a door
-		nodes.Add(new Node(getDoorCenter(_dungeon.doors[0])));
+		nodes.Add(new Node(getDoorCenter(dungeonBase.doors[0])));
 
 		//create a connection between the two rooms and the door...
 		AddConnection(nodes[0], nodes[2]);
@@ -48,8 +48,8 @@ using System.Drawing;
 	 */
 	protected Point getRoomCenter(Room pRoom)
 	{
-		float centerX = ((pRoom.area.Left + pRoom.area.Right) / 2.0f) * _dungeon.scale;
-		float centerY = ((pRoom.area.Top + pRoom.area.Bottom) / 2.0f) * _dungeon.scale;
+		float centerX = ((pRoom.area.Left + pRoom.area.Right) / 2.0f) * dungeonBase.scale;
+		float centerY = ((pRoom.area.Top + pRoom.area.Bottom) / 2.0f) * dungeonBase.scale;
 		return new Point((int)centerX, (int)centerY);
 	}
 
@@ -68,8 +68,8 @@ using System.Drawing;
 	 */
 	protected Point getPointCenter(Point pLocation)
 	{
-		float centerX = (pLocation.X + 0.5f) * _dungeon.scale;
-		float centerY = (pLocation.Y + 0.5f) * _dungeon.scale;
+		float centerX = (pLocation.X + 0.5f) * dungeonBase.scale;
+		float centerY = (pLocation.Y + 0.5f) * dungeonBase.scale;
 		return new Point((int)centerX, (int)centerY);
 	}
 

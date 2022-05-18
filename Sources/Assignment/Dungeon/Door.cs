@@ -4,7 +4,7 @@
  * This class represents (the data for) a Door, at this moment only a position in the dungeon.
  * Changes to this class might be required based on your specific implementation of the algorithm.
  */
-class Door
+public class Door
 {
 	public readonly Point location;
 

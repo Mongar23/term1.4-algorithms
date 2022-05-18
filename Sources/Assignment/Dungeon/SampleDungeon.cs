@@ -5,7 +5,7 @@ using System.Drawing;
  * An example of a dungeon implementation.  
  * This implementation places two rooms manually but your implementation has to do it procedurally.
  */
-class SampleDungeon : Dungeon
+class SampleDungeon : DungeonBase
 {
 	public SampleDungeon(Size pSize) : base(pSize) {}
 

@@ -1,10 +1,10 @@
 using System;
 
-class Program
+public class Program
 {
-    public static void Main(String[] args)
-    {
-            AlgorithmsAssignment dcg = new AlgorithmsAssignment();
-            dcg.Start();
-    }
+	public static void Main(string[] args)
+	{
+		AlgorithmsAssignment dcg = new();
+		dcg.Start();
+	}
 }

@@ -1,6 +1,7 @@
 using System.Drawing;
 using GXPEngine;
 using GXPEngine.OpenGL;
+using Mathias;
 
 /**
  * This is the main 'game' for the Algorithms Assignment that accompanies the Algorithms course.
@@ -15,7 +16,7 @@ using GXPEngine.OpenGL;
 class AlgorithmsAssignment : Game
 {
 	//Required for assignment 1
-	Dungeon _dungeon = null;
+	DungeonBase _dungeonBase = null;
 
 	//Required for assignment 2
 	NodeGraph _graph = null;
@@ -45,7 +46,7 @@ class AlgorithmsAssignment : Game
 		//
 		//To visualize where these scaled pixels are we also add a grid, where we use
 		//this same SCALE value as a grid size setting. Comment out the next line to hide it.
-		Grid grid = new Grid(width, height, SCALE);
+		Grid grid = new (width, height, SCALE);
 
 		/////////////////////////////////////////////////////////////////////////////////////////
 		///	ASSIGNMENT 1 : DUNGEON - READ CAREFULLY
@@ -62,7 +63,7 @@ class AlgorithmsAssignment : Game
 		//so that if we scale it up by 40, its screenwidth is 800 pixels again.
 		//Basically this means every pixel drawn in the dungeon has the size of the SCALE setting.
 		//Eg walls are SCALE pixels thick, doors are squares with an area of SCALE * SCALE pixels.
-		Size size = new Size(width / SCALE, height / SCALE);
+		Size size = new (width / SCALE, height / SCALE);
 
 		////////////////////////////////////////
 		//Assignment 1.1 Sufficient (Mandatory)
@@ -72,7 +73,8 @@ class AlgorithmsAssignment : Game
 		//TODO: Study the SampleDungeon class and try it out below
 		//TODO: Comment out SampleDungeon below, implement a SufficientDungeon class and uncomment it below
 
-		_dungeon = new SampleDungeon(size);
+		_dungeonBase = new Dungeon(size);
+		//_dungeonBase = new SampleDungeonBase(size);
 		//_dungeon = new SufficientDungeon(size);
 
 		/////////////////////////////////
@@ -91,12 +93,12 @@ class AlgorithmsAssignment : Game
 
 		//_dungeon = new ExcellentDungeon(size);
 
-		if (_dungeon != null)
+		if (_dungeonBase != null)
 		{
 			//assign the SCALE we talked about above, so that it no longer looks like a tinietiny stamp:
-			_dungeon.scale = SCALE;
+			_dungeonBase.scale = SCALE;
 			//Tell the dungeon to generate rooms and doors with the given MIN_ROOM_SIZE
-			_dungeon.Generate(MIN_ROOM_SIZE);
+			_dungeonBase.Generate(MIN_ROOM_SIZE);
 		}
 
 		/////////////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +193,7 @@ class AlgorithmsAssignment : Game
 		/// LOOK BUT DON'T TOUCH :)
 
 		if (grid != null) AddChild(grid);
-		if (_dungeon != null) AddChild(_dungeon);
+		if (_dungeonBase != null) AddChild(_dungeonBase);
 		if (_graph != null) AddChild(_graph);
 		if (_tiledView != null) AddChild(_tiledView);
 		if (_pathFinder != null) AddChild(_pathFinder);				//pathfinder on top of that
