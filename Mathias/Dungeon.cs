@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using GXPEngine;
-using Mathias.Utilities;
 
 namespace Mathias
 {
@@ -16,35 +14,36 @@ namespace Mathias
 		protected override void generate(int minimumRoomSize)
 		{
 			this.minimumRoomSize = minimumRoomSize;
-			int maxRooms = Mathf.Floor(size.Width / minimumRoomSize) * Mathf.Floor(size.Height / minimumRoomSize);
-
-			rooms.AddRange(GenerateRooms(maxRooms + 1)); // +1 because it is exclusive
+			GenerateRooms();
 		}
 
-		private List<Room> GenerateRooms(int n)
+		private void GenerateRooms()
 		{
-			List<Room> tempRooms = new();
-			tempRooms.Add(new Room(0, 0, size.Width, size.Height));
+			rooms.Add(new Room(0, 0, size.Width, size.Height));
+			List<Room> unsplitableRooms = new();
 
-			while (tempRooms.Count < n)
+			while (rooms.Count > unsplitableRooms.Count)
 			{
-				tempRooms = tempRooms.OrderByDescending(r => r.Size.Area()).ToList();
+				Room splittingRoom = rooms[new Random().Next(0, rooms.Count)];
 
-				Room biggest = tempRooms[0];
+				if (unsplitableRooms.Contains(splittingRoom)) { continue; }
 
-				// Room is to small to split exit loop.
-				if (biggest.Size.Width <= minimumRoomSize * 2 && biggest.Size.Height <= minimumRoomSize * 2) { return tempRooms; }
+				if (splittingRoom.Size.Width < minimumRoomSize * 2 && splittingRoom.Size.Height < minimumRoomSize * 2)
+				{
+					unsplitableRooms.Add(splittingRoom);
+					continue;
+				}
 
+				Tuple<Room, Room> splitRooms = SplitRoom(splittingRoom);
 
-				Tuple<Room, Room> splitRooms = SplitRoom(biggest);
-				tempRooms.Add(splitRooms.Item1);
-				tempRooms.Add(splitRooms.Item2);
+				if (splitRooms.Item2 == null) { continue; } //Failed splitting.
 
-				tempRooms.Remove(biggest);
+				rooms.Add(splitRooms.Item1);
+				rooms.Add(splitRooms.Item2);
+
+				rooms.Remove(splittingRoom);
+				unsplitableRooms.Clear();
 			}
-
-
-			return tempRooms;
 		}
 
 		private Tuple<Room, Room> SplitRoom(Room baseRoom)
@@ -52,39 +51,30 @@ namespace Mathias
 			Room a = baseRoom;
 			Room b = new(0, 0, 0, 0);
 
-			while (a.Size.Width < minimumRoomSize ||
-			       a.Size.Height < minimumRoomSize ||
-			       b.Size.Width < minimumRoomSize ||
-			       b.Size.Height < minimumRoomSize)
+			bool horizontalSplit;
+
+			if (baseRoom.Size.Height - minimumRoomSize < minimumRoomSize) { horizontalSplit = false; }
+			else if (baseRoom.Size.Width - minimumRoomSize < minimumRoomSize) { horizontalSplit = true; }
+			else { horizontalSplit = new Random().Next(0, 2) == 0; }
+
+
+			if (horizontalSplit)
 			{
-				bool horizontalSplit;
+				int cutSize = baseRoom.Size.Height - new Random().Next(minimumRoomSize, baseRoom.Size.Height - minimumRoomSize);
 
-				if (baseRoom.Size.Height - minimumRoomSize < minimumRoomSize) { horizontalSplit = false; }
-				else if (baseRoom.Size.Width - minimumRoomSize < minimumRoomSize) { horizontalSplit = true; }
-				else { horizontalSplit = new Random().Next(0, 2) == 0; }
-
-
-				if (horizontalSplit)
-				{
-					int cutSize = baseRoom.Size.Height - new Random(Time.deltaTime).Next(minimumRoomSize, baseRoom.Size.Height - minimumRoomSize);
-
-					a = new Room(baseRoom.Position.X, baseRoom.Position.Y, baseRoom.Size.Width, cutSize + 1);
-					b = new Room(baseRoom.Position.X,
-						baseRoom.Position.Y + cutSize,
-						baseRoom.Size.Width,
-						baseRoom.Size.Height - cutSize);
-				}
-				else
-				{
-					int cutSize = baseRoom.Size.Width - new Random(Time.time).Next(minimumRoomSize, baseRoom.Size.Width - minimumRoomSize);
-
-					a = new Room(baseRoom.Position.X, baseRoom.Position.Y, cutSize + 1, baseRoom.Size.Height);
-					b = new Room(baseRoom.Position.X + cutSize,
-						baseRoom.Position.Y,
-						baseRoom.Size.Width - cutSize,
-						baseRoom.Size.Height);
-				}
+				a = new Room(baseRoom.Position.X, baseRoom.Position.Y, baseRoom.Size.Width, cutSize + 1);
+				b = new Room(baseRoom.Position.X, baseRoom.Position.Y + cutSize, baseRoom.Size.Width, baseRoom.Size.Height - cutSize);
 			}
+			else
+			{
+				int cutSize = baseRoom.Size.Width - new Random().Next(minimumRoomSize, baseRoom.Size.Width - minimumRoomSize);
+
+				a = new Room(baseRoom.Position.X, baseRoom.Position.Y, cutSize + 1, baseRoom.Size.Height);
+				b = new Room(baseRoom.Position.X + cutSize, baseRoom.Position.Y, baseRoom.Size.Width - cutSize, baseRoom.Size.Height);
+			}
+
+
+			if (b.Size.Width < minimumRoomSize || b.Size.Height < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
 
 
 			return new Tuple<Room, Room>(a, b);
