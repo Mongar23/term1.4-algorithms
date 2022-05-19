@@ -7,6 +7,7 @@ public class Room
 {
 	public Point Position { get; }
 	public Size Size { get; }
+	public bool IsSplitHorizontally { get; set; } = true;
 	public Rectangle area;
 
 	public Room(Rectangle pArea)

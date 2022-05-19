@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using GXPEngine;
+using Mathias.Utilities;
 
 namespace Mathias
 {
@@ -28,15 +28,13 @@ namespace Mathias
 
 				if (unsplitableRooms.Contains(splittingRoom)) { continue; }
 
-				if (splittingRoom.Size.Width < minimumRoomSize * 2 && splittingRoom.Size.Height < minimumRoomSize * 2)
+				Tuple<Room, Room> splitRooms = SplitRoom(splittingRoom);
+
+				if (splitRooms.Item2 == null)
 				{
 					unsplitableRooms.Add(splittingRoom);
 					continue;
 				}
-
-				Tuple<Room, Room> splitRooms = SplitRoom(splittingRoom);
-
-				if (splitRooms.Item2 == null) { continue; } //Failed splitting.
 
 				rooms.Add(splitRooms.Item1);
 				rooms.Add(splitRooms.Item2);
@@ -48,14 +46,23 @@ namespace Mathias
 
 		private Tuple<Room, Room> SplitRoom(Room baseRoom)
 		{
-			Room a = baseRoom;
-			Room b = new(0, 0, 0, 0);
+			Room a;
+			Room b;
 
 			bool horizontalSplit;
 
-			if (baseRoom.Size.Height - minimumRoomSize < minimumRoomSize) { horizontalSplit = false; }
-			else if (baseRoom.Size.Width - minimumRoomSize < minimumRoomSize) { horizontalSplit = true; }
-			else { horizontalSplit = new Random().Next(0, 2) == 0; }
+			if (baseRoom.IsSplitHorizontally)
+			{
+				if (baseRoom.Size.Width - minimumRoomSize < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
+
+				horizontalSplit = false;
+			}
+			else
+			{
+				if (baseRoom.Size.Height - minimumRoomSize < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
+
+				horizontalSplit = true;
+			}
 
 
 			if (horizontalSplit)
@@ -64,6 +71,8 @@ namespace Mathias
 
 				a = new Room(baseRoom.Position.X, baseRoom.Position.Y, baseRoom.Size.Width, cutSize + 1);
 				b = new Room(baseRoom.Position.X, baseRoom.Position.Y + cutSize, baseRoom.Size.Width, baseRoom.Size.Height - cutSize);
+
+				a.IsSplitHorizontally = b.IsSplitHorizontally = horizontalSplit;
 			}
 			else
 			{
@@ -71,10 +80,13 @@ namespace Mathias
 
 				a = new Room(baseRoom.Position.X, baseRoom.Position.Y, cutSize + 1, baseRoom.Size.Height);
 				b = new Room(baseRoom.Position.X + cutSize, baseRoom.Position.Y, baseRoom.Size.Width - cutSize, baseRoom.Size.Height);
+
+				a.IsSplitHorizontally = b.IsSplitHorizontally = horizontalSplit;
 			}
 
 
-			if (b.Size.Width < minimumRoomSize || b.Size.Height < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
+			if (b.Size.Width < minimumRoomSize ||
+			    b.Size.Height < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
 
 
 			return new Tuple<Room, Room>(a, b);
