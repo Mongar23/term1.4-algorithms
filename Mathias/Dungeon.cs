@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Mathias.Utilities;
 
 namespace Mathias
 {
@@ -17,6 +18,13 @@ namespace Mathias
 			this.minimumRoomSize = minimumRoomSize;
 			GenerateRooms();
 			CleanDoors();
+			//RemoveRooms();
+			PaintRooms();
+		}
+
+		protected override void drawRooms(IEnumerable<Room> rooms, Pen wallColor, Brush fillColor = null)
+		{
+			foreach (Room room in rooms) { drawRoom(room, wallColor, new SolidBrush(room.Color)); }
 		}
 
 		/// <summary>
@@ -50,7 +58,7 @@ namespace Mathias
 
 				rooms.Remove(splittingRoom);
 			}
-			
+
 			foreach (Room room in rooms) { blackListedPoints.AddRange(room.GetCorners()); }
 		}
 
@@ -94,10 +102,16 @@ namespace Mathias
 				a.IsSplitHorizontally = b.IsSplitHorizontally = true;
 			}
 
-
 			return new Tuple<Room, Room>(a, b);
 		}
 
+
+		/// <summary>
+		///     A door between room <paramref name="a" /> and <paramref name="b" /> will be generated. It will be at least 2 points
+		///     from the corner.
+		/// </summary>
+		/// <param name="a">Room a</param>
+		/// <param name="b">Room b</param>
 		private void GenerateDoor(Room a, Room b)
 		{
 			Door door = a.IsSplitHorizontally
@@ -107,11 +121,19 @@ namespace Mathias
 			a.doors.Add(door);
 			b.doors.Add(door);
 
+			SearchOtherDoors(a);
+			SearchOtherDoors(b);
+
 			door.SetRooms(a, b);
 
 			doors.Add(door);
 		}
 
+
+		/// <summary>
+		///     All doors are generated as soon as they are split, it can happen that the next room wil be split exactly in front
+		///     of  the door. This method will move all these doors.
+		/// </summary>
 		private void CleanDoors()
 		{
 			Door[] doorsToMove = doors.Where(door => blackListedPoints.Contains(door.location)).ToArray();
@@ -133,9 +155,57 @@ namespace Mathias
 						newDoorLocation = new Point(door.roomB.Position.X, y);
 					}
 
-
 					door.Move(newDoorLocation);
 				}
+			}
+		}
+
+		private void SearchOtherDoors(Room room)
+		{
+			foreach (Door door in doors)
+			{
+				if (door.location.X < room.Position.X || door.location.X > room.Position.X + room.Size.Width)
+				{
+					continue;
+				}
+
+				if (door.location.Y < room.Position.Y || door.location.Y > room.Position.Y + room.Size.Height)
+				{
+					continue;
+				}
+
+				room.doors.Add(door);
+			}
+		}
+
+		private void RemoveRooms()
+		{
+			List<Room> sortedRooms = rooms.OrderBy(r => r.Size.Area()).ToList();
+			int smallestArea = sortedRooms.First().Size.Area();
+			int biggestArea = sortedRooms.Last().Size.Area();
+
+			foreach (Room room in sortedRooms)
+			{
+				if (room.Size.Area() != biggestArea && room.Size.Area() != smallestArea) { continue; }
+
+				doors = doors.Except(room.doors).ToList();
+				rooms.Remove(room);
+			}
+		}
+
+		private void PaintRooms()
+		{
+			foreach (Room room in rooms)
+			{
+				Debug.Log(room.ToString());
+				room.Color = room.doors.Count switch
+				{
+					0 => Color.Red,
+					1 => Color.Orange,
+					2 => Color.Yellow,
+					>= 3 => Color.Green,
+					_ => throw new ArgumentOutOfRangeException()
+				};
 			}
 		}
 	}

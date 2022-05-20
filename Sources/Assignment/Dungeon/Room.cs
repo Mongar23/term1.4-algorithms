@@ -8,6 +8,7 @@ public class Room
 {
 	public readonly List<Door> doors = new();
 	public bool IsSplitHorizontally { get; set; } = true;
+	public Color Color { get; set; }
 	public Point Position { get; }
 	public Size Size { get; }
 
