@@ -28,76 +28,20 @@ class AlgorithmsAssignment : Game
 
 	//common settings
 	private const int SCALE = 20;				//TODO: experiment with changing this
-	private const int MIN_ROOM_SIZE = 7;		//TODO: use this setting in your dungeon generator
+	private const int MIN_ROOM_SIZE = 5;		//TODO: use this setting in your dungeon generator
 
 	public AlgorithmsAssignment() : base(800, 600, false, true, -1, -1, false)
 	{
-		/////////////////////////////////////////////////////////////////////////////////////////
-		///	BASE SETUP - FEEL FREE TO SKIP
-
-		//set our default background color and title
 		GL.ClearColor(1, 1, 1, 1);
 		GL.glfwSetWindowTitle("Algorithms Game");
-
-		//The simplest approach to visualize a dungeon, is using black and white squares
-		//to show where the walls (black) and walkable areas/doors (white) are.
-		//A quick and easy way to implement that is by creating a small canvas, 
-		//draw black and white pixels on it and scale it up by an insane amount (e.g. 40).
-		//
-		//To visualize where these scaled pixels are we also add a grid, where we use
-		//this same SCALE value as a grid size setting. Comment out the next line to hide it.
+		
 		Grid grid = new (width, height, SCALE);
-
-		/////////////////////////////////////////////////////////////////////////////////////////
-		///	ASSIGNMENT 1 : DUNGEON - READ CAREFULLY
-		///
-
-		//The Dungeon in this assignment is an object that holds Rooms & Doors instances, and
-		//extends a canvas that we scale up so that it can visualize these rooms & doors.
-		//In a 'real' setting you would split this 'model' of the dungeon from the visualization,
-		//but we chose to not make it more complicated than necessary.
-
-		//To calculate the size of the dungeon we can create, we take our screen size and
-		//divide it by how much we want to scale everything up. For example if our screen size is 800 
-		//and the dungeon scale 40, we would like our dungeon to have a max width of 20 'units'
-		//so that if we scale it up by 40, its screenwidth is 800 pixels again.
-		//Basically this means every pixel drawn in the dungeon has the size of the SCALE setting.
-		//Eg walls are SCALE pixels thick, doors are squares with an area of SCALE * SCALE pixels.
 		Size size = new (width / SCALE, height / SCALE);
 
-		////////////////////////////////////////
-		//Assignment 1.1 Sufficient (Mandatory)
-		//
-		//TODO: Study assignment 1.1 on blackboard
-		//TODO: Study the Dungeon, Room and Door classes
-		//TODO: Study the SampleDungeon class and try it out below
-		//TODO: Comment out SampleDungeon below, implement a SufficientDungeon class and uncomment it below
-
 		_dungeonBase = new Dungeon(size);
-		//_dungeonBase = new SampleDungeonBase(size);
-		//_dungeon = new SufficientDungeon(size);
-
-		/////////////////////////////////
-		//Assignment 1.2 Good (optional)
-		//
-		//TODO: Study assignment 1.2 on blackboard
-		//TODO: Comment out SufficientDungeon above, implement a GoodDungeon class, and uncomment it below
-
-		//_dungeon = new GoodDungeon(size);
-
-		//////////////////////////////////////
-		//Assignment 1.3 Excellent (optional)
-		//
-		//TODO: Study assignment 1.3 on blackboard
-		//TODO: Comment out GoodDungeon above, implement an ExcellentDungeon class, and uncomment it below
-
-		//_dungeon = new ExcellentDungeon(size);
-
 		if (_dungeonBase != null)
 		{
-			//assign the SCALE we talked about above, so that it no longer looks like a tinietiny stamp:
 			_dungeonBase.scale = SCALE;
-			//Tell the dungeon to generate rooms and doors with the given MIN_ROOM_SIZE
 			_dungeonBase.Generate(MIN_ROOM_SIZE);
 		}
 
