@@ -6,7 +6,6 @@ using System.Drawing;
  */
 public class Room
 {
-	public readonly List<Door> doors = new();
 	public bool IsSplitHorizontally { get; set; } = true;
 	public Color Color { get; set; }
 	public Point Position { get; }
@@ -24,8 +23,8 @@ public class Room
 	public Room(Point position, Size size)
 	{
 		area = new Rectangle(position.X, position.Y, size.Width, size.Height);
-		position = area.Location;
-		size = area.Size;
+		Position = area.Location;
+		Size = area.Size;
 	}
 
 	public Room(int x, int y, int width, int height)
@@ -46,8 +45,30 @@ public class Room
 		};
 	}
 
+	public int GetDoorCount(IEnumerable<Door> doorsToCheck)
+	{
+		int count = 0;
+
+		foreach (Door door in doorsToCheck)
+		{
+			if (door.location.X < Position.X || door.location.X > Position.X + Size.Width)
+			{
+				continue;
+			}
+
+			if (door.location.Y < Position.Y || door.location.Y > Position.Y + Size.Height)
+			{
+				continue;
+			}
+
+			count++;
+		}
+
+		return count;
+	}
+
 	public override string ToString()
 	{
-		return $"room(({Position.X}, {Position.Y}), {Size.Width}*{Size.Height}) \t\t doors{doors.Count}";
+		return $"room(({Position.X}, {Position.Y}), {Size.Width}*{Size.Height})";
 	}
 }

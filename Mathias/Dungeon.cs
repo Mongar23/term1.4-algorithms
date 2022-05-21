@@ -9,6 +9,7 @@ namespace Mathias
 	public class Dungeon : DungeonBase
 	{
 		private readonly List<Point> blackListedPoints = new();
+		private List<RoomPair> roomPairs = new();
 		private int minimumRoomSize;
 
 		public Dungeon(Size pSize) : base(pSize) { }
@@ -17,9 +18,9 @@ namespace Mathias
 		{
 			this.minimumRoomSize = minimumRoomSize;
 			GenerateRooms();
-			CleanDoors();
-			//RemoveRooms();
-			PaintRooms();
+			RemoveRooms();
+			GenerateDoors();
+			ColorRooms();
 		}
 
 		protected override void drawRooms(IEnumerable<Room> rooms, Pen wallColor, Brush fillColor = null)
@@ -50,16 +51,16 @@ namespace Mathias
 					continue;
 				}
 
+				RoomPair roomPair = new(splitRooms.Item1, splitRooms.Item2);
+				roomPairs.Add(roomPair);
 
-				rooms.Add(splitRooms.Item1);
-				rooms.Add(splitRooms.Item2);
-
-				GenerateDoor(splitRooms.Item1, splitRooms.Item2);
+				rooms.Add(roomPair.A);
+				rooms.Add(roomPair.B);
 
 				rooms.Remove(splittingRoom);
 			}
 
-			foreach (Room room in rooms) { blackListedPoints.AddRange(room.GetCorners()); }
+			foreach (Point corner in rooms.SelectMany(room => room.GetCorners())) { blackListedPoints.Add(corner); }
 		}
 
 
@@ -105,100 +106,51 @@ namespace Mathias
 			return new Tuple<Room, Room>(a, b);
 		}
 
-
-		/// <summary>
-		///     A door between room <paramref name="a" /> and <paramref name="b" /> will be generated. It will be at least 2 points
-		///     from the corner.
-		/// </summary>
-		/// <param name="a">Room a</param>
-		/// <param name="b">Room b</param>
-		private void GenerateDoor(Room a, Room b)
-		{
-			Door door = a.IsSplitHorizontally
-				? new Door(new Random().Next(a.Position.X + 2, (a.Position.X + a.Size.Width) - 2), b.Position.Y)
-				: new Door(b.Position.X, new Random().Next(a.Position.Y + 2, (a.Position.Y + a.Size.Height) - 2));
-
-			a.doors.Add(door);
-			b.doors.Add(door);
-
-			SearchOtherDoors(a);
-			SearchOtherDoors(b);
-
-			door.SetRooms(a, b);
-
-			doors.Add(door);
-		}
-
-
-		/// <summary>
-		///     All doors are generated as soon as they are split, it can happen that the next room wil be split exactly in front
-		///     of  the door. This method will move all these doors.
-		/// </summary>
-		private void CleanDoors()
-		{
-			Door[] doorsToMove = doors.Where(door => blackListedPoints.Contains(door.location)).ToArray();
-
-			foreach (Door door in doorsToMove)
-			{
-				while (blackListedPoints.Contains(door.location))
-				{
-					Point newDoorLocation;
-
-					if (door.roomA.IsSplitHorizontally)
-					{
-						int x = new Random().Next(door.roomA.Position.X + 2, (door.roomA.Position.X + door.roomA.Size.Width) - 2);
-						newDoorLocation = new Point(x, door.roomB.Position.Y);
-					}
-					else
-					{
-						int y = new Random().Next(door.roomA.Position.Y + 2, (door.roomA.Position.Y + door.roomA.Size.Height) - 2);
-						newDoorLocation = new Point(door.roomB.Position.X, y);
-					}
-
-					door.Move(newDoorLocation);
-				}
-			}
-		}
-
-		private void SearchOtherDoors(Room room)
-		{
-			foreach (Door door in doors)
-			{
-				if (door.location.X < room.Position.X || door.location.X > room.Position.X + room.Size.Width)
-				{
-					continue;
-				}
-
-				if (door.location.Y < room.Position.Y || door.location.Y > room.Position.Y + room.Size.Height)
-				{
-					continue;
-				}
-
-				room.doors.Add(door);
-			}
-		}
-
 		private void RemoveRooms()
 		{
-			List<Room> sortedRooms = rooms.OrderBy(r => r.Size.Area()).ToList();
+			Room[] sortedRooms = rooms.OrderBy(r => r.Size.Area()).ToArray();
 			int smallestArea = sortedRooms.First().Size.Area();
 			int biggestArea = sortedRooms.Last().Size.Area();
 
-			foreach (Room room in sortedRooms)
+			foreach (Room room in sortedRooms.Where(room => room.Size.Area() == biggestArea || room.Size.Area() == smallestArea))
 			{
-				if (room.Size.Area() != biggestArea && room.Size.Area() != smallestArea) { continue; }
-
-				doors = doors.Except(room.doors).ToList();
 				rooms.Remove(room);
+			}
+
+			RoomPair[] rpToRemove = roomPairs.Where(roomPair => !rooms.Contains(roomPair.A) || !rooms.Contains(roomPair.B)).ToArray();
+			roomPairs = roomPairs.Except(rpToRemove).ToList();
+		}
+
+		private void GenerateDoors()
+		{
+			foreach (RoomPair roomPair in roomPairs)
+			{
+				Door door;
+
+				do
+				{
+					if (roomPair.IsOverlappingHorizontally)
+					{
+						int doorX = new Random().Next(roomPair.Overlap.X + 2, (roomPair.Overlap.X + roomPair.Overlap.Width) - 2);
+						door = new Door(doorX, roomPair.Overlap.Y);
+					}
+					else
+					{
+						int doorY = new Random().Next(roomPair.Overlap.Y + 2, (roomPair.Overlap.Y + roomPair.Overlap.Height) - 2);
+						door = new Door(roomPair.Overlap.X, doorY);
+					}
+				} while (blackListedPoints.Contains(door.location));
+
+				door.SetRooms(roomPair.A, roomPair.B);
+				doors.Add(door);
 			}
 		}
 
-		private void PaintRooms()
+		private void ColorRooms()
 		{
 			foreach (Room room in rooms)
 			{
-				Debug.Log(room.ToString());
-				room.Color = room.doors.Count switch
+				room.Color = room.GetDoorCount(doors) switch
 				{
 					0 => Color.Red,
 					1 => Color.Orange,
