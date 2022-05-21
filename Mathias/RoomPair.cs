@@ -40,6 +40,6 @@ namespace Mathias
 
 		}
 
-		public bool Contains(Room room) { return room == A || room == B; }
+		public bool Contains(Room room) { return room.Equals(A) || room.Equals(B); }
 	}
 }

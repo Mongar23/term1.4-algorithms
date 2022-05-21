@@ -9,8 +9,9 @@ namespace Mathias
 	public class Dungeon : DungeonBase
 	{
 		private readonly List<Point> blackListedPoints = new();
-		private List<RoomPair> roomPairs = new();
+
 		private int minimumRoomSize;
+		private List<RoomPair> roomPairs = new();
 
 		public Dungeon(Size pSize) : base(pSize) { }
 
@@ -114,11 +115,12 @@ namespace Mathias
 
 			foreach (Room room in sortedRooms.Where(room => room.Size.Area() == biggestArea || room.Size.Area() == smallestArea))
 			{
+
+				RoomPair[] toRemove = roomPairs.Where(roomPair => roomPair.Contains(room)).ToArray();
+				foreach (RoomPair roomPair in toRemove) { roomPairs.Remove(roomPair); }
+
 				rooms.Remove(room);
 			}
-
-			RoomPair[] rpToRemove = roomPairs.Where(roomPair => !rooms.Contains(roomPair.A) || !rooms.Contains(roomPair.B)).ToArray();
-			roomPairs = roomPairs.Except(rpToRemove).ToList();
 		}
 
 		private void GenerateDoors()

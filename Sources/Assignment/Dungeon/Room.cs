@@ -51,15 +51,9 @@ public class Room
 
 		foreach (Door door in doorsToCheck)
 		{
-			if (door.location.X < Position.X || door.location.X > Position.X + Size.Width)
-			{
-				continue;
-			}
+			if (door.location.X < Position.X || door.location.X > Position.X + Size.Width) { continue; }
 
-			if (door.location.Y < Position.Y || door.location.Y > Position.Y + Size.Height)
-			{
-				continue;
-			}
+			if (door.location.Y < Position.Y || door.location.Y > Position.Y + Size.Height) { continue; }
 
 			count++;
 		}
@@ -67,8 +61,16 @@ public class Room
 		return count;
 	}
 
-	public override string ToString()
+	public override string ToString() { return $"room(({Position.X}, {Position.Y}), {Size.Width}*{Size.Height})"; }
+
+	//TODO: Cnhage to equalto
+
+	public override bool Equals(object obj) { return Equals(obj as Room); }
+
+	private bool Equals(Room other)
 	{
-		return $"room(({Position.X}, {Position.Y}), {Size.Width}*{Size.Height})";
+		if (Position.X != other.Position.X || Position.Y != other.Position.Y) { return false; }
+
+		return Size.Width == other.Size.Width && Size.Height == other.Size.Height;
 	}
 }
