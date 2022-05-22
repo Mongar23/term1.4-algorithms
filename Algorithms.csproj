@@ -69,6 +69,7 @@
     <Compile Include="GXPEngine\Utils\Time.cs" />
     <Compile Include="GXPEngine\Utils\Utils.cs" />
     <Compile Include="Mathias\Dungeon.cs" />
+    <Compile Include="Mathias\RoomPair.cs" />
     <Compile Include="Mathias\Utilities\Debug.cs" />
     <Compile Include="Mathias\Utilities\SizeExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

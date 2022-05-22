@@ -1,22 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using Mathias.Utilities;
 
 namespace Mathias
 {
 	public class Dungeon : DungeonBase
 	{
 		private readonly List<Point> blackListedPoints = new();
+		private bool drawBlacklist = false;
+
 		private int minimumRoomSize;
+		private List<RoomPair> roomPairs = new();
 
 		public Dungeon(Size pSize) : base(pSize) { }
 
 		protected override void generate(int minimumRoomSize)
 		{
+			Stopwatch stopwatch = new();
+			stopwatch.Start();
+
 			this.minimumRoomSize = minimumRoomSize;
 			GenerateRooms();
-			CleanDoors();
+			GenerateDoors();
+			RemoveRooms();
+			ColorRooms();
+		}
+
+		protected override void drawRooms(IEnumerable<Room> rooms, Pen wallColor, Brush fillColor = null)
+		{
+			foreach (Room room in rooms) { drawRoom(room, wallColor, new SolidBrush(room.Color)); }
+		}
+
+		protected override void draw()
+		{
+			base.draw();
+
+			if (!drawBlacklist) { return; }
+
+			foreach (Point blackListedPoint in blackListedPoints)
+			{
+				graphics.DrawRectangle(new Pen(Color.FromArgb((int)(255 * 0.5f), Color.DarkRed)),
+					blackListedPoint.X,
+					blackListedPoint.Y,
+					0.5f,
+					0.5f);
+			}
 		}
 
 		/// <summary>
@@ -42,21 +73,24 @@ namespace Mathias
 					continue;
 				}
 
+				RoomPair roomPair = new(splitRooms.Item1, splitRooms.Item2);
+				roomPairs.Add(roomPair);
 
-				rooms.Add(splitRooms.Item1);
-				rooms.Add(splitRooms.Item2);
-
-				GenerateDoor(splitRooms.Item1, splitRooms.Item2);
+				rooms.Add(roomPair.A);
+				rooms.Add(roomPair.B);
 
 				rooms.Remove(splittingRoom);
 			}
-			
-			foreach (Room room in rooms) { blackListedPoints.AddRange(room.GetCorners()); }
+
+			foreach (Room room in rooms)
+			{
+				foreach (Point corner in room.GetCorners()) { blackListedPoints.Add(corner); }
+			}
 		}
 
 
 		/// <summary>
-		///     This method will split a <see cref="Room" /> horizontally or vertically based on the last split. And will return a
+		///     Will split a <see cref="Room" /> horizontally or vertically based on the last split. And will return a
 		///     tuple with the two new rooms generated on the <paramref name="baseRoom" />. If the room is too small to be split,
 		///     it will return the <paramref name="baseRoom" /> and <see langword="null" />.
 		/// </summary>
@@ -94,49 +128,121 @@ namespace Mathias
 				a.IsSplitHorizontally = b.IsSplitHorizontally = true;
 			}
 
-
 			return new Tuple<Room, Room>(a, b);
 		}
 
-		private void GenerateDoor(Room a, Room b)
+
+		/// <summary>
+		///     Will remove all rooms that have either the biggest or smallest area and remove doors intersecting with it.
+		/// </summary>
+		private void RemoveRooms()
 		{
-			Door door = a.IsSplitHorizontally
-				? new Door(new Random().Next(a.Position.X + 2, (a.Position.X + a.Size.Width) - 2), b.Position.Y)
-				: new Door(b.Position.X, new Random().Next(a.Position.Y + 2, (a.Position.Y + a.Size.Height) - 2));
+			Room[] sortedRooms = rooms.OrderBy(r => r.Size.Area()).ToArray();
+			int smallestArea = sortedRooms.First().Size.Area();
+			int biggestArea = sortedRooms.Last().Size.Area();
 
-			a.doors.Add(door);
-			b.doors.Add(door);
-
-			door.SetRooms(a, b);
-
-			doors.Add(door);
-		}
-
-		private void CleanDoors()
-		{
-			Door[] doorsToMove = doors.Where(door => blackListedPoints.Contains(door.location)).ToArray();
-
-			foreach (Door door in doorsToMove)
+			foreach (Room room in sortedRooms.Where(room => room.Size.Area() == biggestArea || room.Size.Area() == smallestArea))
 			{
-				while (blackListedPoints.Contains(door.location))
-				{
-					Point newDoorLocation;
+				rooms.Remove(room);
 
-					if (door.roomA.IsSplitHorizontally)
-					{
-						int x = new Random().Next(door.roomA.Position.X + 2, (door.roomA.Position.X + door.roomA.Size.Width) - 2);
-						newDoorLocation = new Point(x, door.roomB.Position.Y);
-					}
-					else
-					{
-						int y = new Random().Next(door.roomA.Position.Y + 2, (door.roomA.Position.Y + door.roomA.Size.Height) - 2);
-						newDoorLocation = new Point(door.roomB.Position.X, y);
-					}
+				foreach (Point corner in room.GetCorners()) { blackListedPoints.Remove(corner); }
 
-
-					door.Move(newDoorLocation);
-				}
+				Door[] toRemove = doors.Where(d => room.area.Contains(d.location)).ToArray();
+				foreach (Door door in toRemove) { doors.Remove(door); }
 			}
 		}
+
+
+		/// <summary>
+		///     Assigns colors based on a <see cref="Room" />'s <see cref="Door" /> count. In case a <see cref="Room" /> has 0
+		///     <see cref="Door" />s, an extra check will be done to make sure it doesn't connect to anything, if it does a
+		///     <see cref="Door" /> will be generated for these <see cref="Room" />s.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">
+		///     Will be thrown if the <see cref="Room" />'s <see cref="Door" /> count
+		///     will return negative.
+		/// </exception>
+		private void ColorRooms()
+		{
+			foreach (Room room in rooms)
+			{
+				int doorCount = room.GetDoorCount(doors);
+
+				if (doorCount == 0) //Check if room is an island or just pair-less.
+				{
+					foreach (Room r in rooms.Where(r => room.area.IntersectsWith(r.area)))
+					{
+						if (room.Equals(r)) { continue; }
+
+						doors.Add(GenerateDoor(room, r));
+						doorCount++;
+						break;
+					}
+				}
+
+				room.Color = doorCount switch
+				{
+					0 => Color.Red,
+					1 => Color.Orange,
+					2 => Color.Yellow,
+					>= 3 => Color.Green,
+					_ => throw new ArgumentOutOfRangeException()
+				};
+			}
+		}
+
+		#region Door generation
+		/// <summary>
+		///     Generate doors for all <see cref="RoomPair" />s in the roomPair collection.
+		/// </summary>
+		private void GenerateDoors()
+		{
+			foreach (RoomPair roomPair in roomPairs) { doors.Add(GenerateDoor(roomPair)); }
+		}
+
+		/// <summary>
+		///     Calls <see cref="GenerateDoor(RoomPair)" /> with a new temporary <see cref="RoomPair" /> created for
+		///     <paramref name="a" /> and <paramref name="b" />.
+		/// </summary>
+		/// <param name="a">
+		///     <see cref="Room" /> to generate a <see cref="Door" /> for, to connect it with <paramref name="b" />
+		/// </param>
+		/// <param name="b">
+		///     <see cref="Room" /> to generate a <see cref="Door" /> for, to connect it with <paramref name="a" />
+		/// </param>
+		/// <returns>
+		///     A newly created door to connect <see cref="Room" />s <paramref name="a" /> and <paramref name="b" />
+		/// </returns>
+		private Door GenerateDoor(Room a, Room b) { return GenerateDoor(new RoomPair(a, b)); }
+
+		/// <summary>
+		///     Creates a new door to connect the <see cref="Room" />s in the <see cref="RoomPair" />. It will place an door
+		///     somewhere in the overlapping area. In case this newly placed <see cref="Door" />'s location is in a blacklisted
+		///     spot, it will try again to place the door in a new location.
+		/// </summary>
+		/// <param name="roomPair">The <see cref="RoomPair" /> to connect with the newly created door.</param>
+		/// <returns>A newly created door to connect the rooms <see cref="Room" />s in <paramref name="roomPair" /></returns>
+		private Door GenerateDoor(RoomPair roomPair)
+		{
+			Door door;
+
+			do
+			{
+				if (roomPair.IsOverlappingHorizontally)
+				{
+					int doorX = new Random().Next(roomPair.Overlap.X + 2, (roomPair.Overlap.X + roomPair.Overlap.Width) - 2);
+					door = new Door(doorX, roomPair.Overlap.Y);
+				}
+				else
+				{
+					int doorY = new Random().Next(roomPair.Overlap.Y + 2, (roomPair.Overlap.Y + roomPair.Overlap.Height) - 2);
+					door = new Door(roomPair.Overlap.X, doorY);
+				}
+			} while (blackListedPoints.Contains(door.location));
+
+			door.SetRooms(roomPair.A, roomPair.B);
+			return door;
+		}
+		#endregion
 	}
 }

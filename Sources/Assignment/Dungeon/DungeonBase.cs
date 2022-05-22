@@ -21,8 +21,8 @@ public abstract class DungeonBase : Canvas
 	public readonly Size size;
 
 	//base implementation assumes dungeon consists of rooms and doors, adapt in subclass if needed
-	public readonly List<Room> rooms = new List<Room>();
-	public readonly List<Door> doors = new List<Door>();
+	public List<Room> rooms = new List<Room>();
+	public List<Door> doors = new List<Door>();
 
 	//Set this to false if you want to do all drawing yourself from the generate method.
 	//This might be handy while debugging your own algorithm.
