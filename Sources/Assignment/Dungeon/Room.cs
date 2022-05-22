@@ -39,9 +39,9 @@ public class Room
 		return new[]
 		{
 			Position,
-			new Point(Position.X + Size.Width, Position.Y),
-			new Point(Position.X + Size.Width, Position.Y + Size.Height),
-			new Point(Position.X, Position.Y + Size.Height)
+			new Point(Position.X + Size.Width - 1, Position.Y),
+			new Point(Position.X + Size.Width - 1, Position.Y + Size.Height - 1),
+			new Point(Position.X, Position.Y + Size.Height - 1)
 		};
 	}
 

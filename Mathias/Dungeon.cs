@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using Mathias.Utilities;
-using Debug = Mathias.Utilities.Debug;
 
 namespace Mathias
 {
 	public class Dungeon : DungeonBase
 	{
 		private readonly List<Point> blackListedPoints = new();
+		private bool drawBlacklist = false;
 
 		private int minimumRoomSize;
 		private List<RoomPair> roomPairs = new();
@@ -32,6 +32,22 @@ namespace Mathias
 		protected override void drawRooms(IEnumerable<Room> rooms, Pen wallColor, Brush fillColor = null)
 		{
 			foreach (Room room in rooms) { drawRoom(room, wallColor, new SolidBrush(room.Color)); }
+		}
+
+		protected override void draw()
+		{
+			base.draw();
+
+			if (!drawBlacklist) { return; }
+
+			foreach (Point blackListedPoint in blackListedPoints)
+			{
+				graphics.DrawRectangle(new Pen(Color.FromArgb((int)(255 * 0.5f), Color.DarkRed)),
+					blackListedPoint.X,
+					blackListedPoint.Y,
+					0.5f,
+					0.5f);
+			}
 		}
 
 		/// <summary>
@@ -68,12 +84,7 @@ namespace Mathias
 
 			foreach (Room room in rooms)
 			{
-				foreach (Point corner in room.GetCorners())
-				{
-					if (blackListedPoints.Contains(corner)) { continue; }
-
-					blackListedPoints.Add(corner);
-				}
+				foreach (Point corner in room.GetCorners()) { blackListedPoints.Add(corner); }
 			}
 		}
 
@@ -134,18 +145,30 @@ namespace Mathias
 			{
 				rooms.Remove(room);
 
+				foreach (Point corner in room.GetCorners()) { blackListedPoints.Remove(corner); }
+
 				Door[] toRemove = doors.Where(d => room.area.Contains(d.location)).ToArray();
 				foreach (Door door in toRemove) { doors.Remove(door); }
 			}
 		}
 
+
+		/// <summary>
+		///     Assigns colors based on a <see cref="Room" />'s <see cref="Door" /> count. In case a <see cref="Room" /> has 0
+		///     <see cref="Door" />s, an extra check will be done to make sure it doesn't connect to anything, if it does a
+		///     <see cref="Door" /> will be generated for these <see cref="Room" />s.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">
+		///     Will be thrown if the <see cref="Room" />'s <see cref="Door" /> count
+		///     will return negative.
+		/// </exception>
 		private void ColorRooms()
 		{
 			foreach (Room room in rooms)
 			{
 				int doorCount = room.GetDoorCount(doors);
 
-				if (doorCount == 0) //Check if room is an island or just pairless.
+				if (doorCount == 0) //Check if room is an island or just pair-less.
 				{
 					foreach (Room r in rooms.Where(r => room.area.IntersectsWith(r.area)))
 					{
@@ -153,7 +176,6 @@ namespace Mathias
 
 						doors.Add(GenerateDoor(room, r));
 						doorCount++;
-						Debug.Log($"Saved room {room} from being left out!");
 						break;
 					}
 				}
@@ -170,13 +192,36 @@ namespace Mathias
 		}
 
 		#region Door generation
+		/// <summary>
+		///     Generate doors for all <see cref="RoomPair" />s in the roomPair collection.
+		/// </summary>
 		private void GenerateDoors()
 		{
 			foreach (RoomPair roomPair in roomPairs) { doors.Add(GenerateDoor(roomPair)); }
 		}
 
+		/// <summary>
+		///     Calls <see cref="GenerateDoor(RoomPair)" /> with a new temporary <see cref="RoomPair" /> created for
+		///     <paramref name="a" /> and <paramref name="b" />.
+		/// </summary>
+		/// <param name="a">
+		///     <see cref="Room" /> to generate a <see cref="Door" /> for, to connect it with <paramref name="b" />
+		/// </param>
+		/// <param name="b">
+		///     <see cref="Room" /> to generate a <see cref="Door" /> for, to connect it with <paramref name="a" />
+		/// </param>
+		/// <returns>
+		///     A newly created door to connect <see cref="Room" />s <paramref name="a" /> and <paramref name="b" />
+		/// </returns>
 		private Door GenerateDoor(Room a, Room b) { return GenerateDoor(new RoomPair(a, b)); }
 
+		/// <summary>
+		///     Creates a new door to connect the <see cref="Room" />s in the <see cref="RoomPair" />. It will place an door
+		///     somewhere in the overlapping area. In case this newly placed <see cref="Door" />'s location is in a blacklisted
+		///     spot, it will try again to place the door in a new location.
+		/// </summary>
+		/// <param name="roomPair">The <see cref="RoomPair" /> to connect with the newly created door.</param>
+		/// <returns>A newly created door to connect the rooms <see cref="Room" />s in <paramref name="roomPair" /></returns>
 		private Door GenerateDoor(RoomPair roomPair)
 		{
 			Door door;
