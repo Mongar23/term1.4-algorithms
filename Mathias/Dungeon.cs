@@ -55,6 +55,11 @@ namespace Mathias
 				RoomPair roomPair = new(splitRooms.Item1, splitRooms.Item2);
 				roomPairs.Add(roomPair);
 
+				foreach (RoomPair pair in roomPairs.Where(pair => pair.Contains(splittingRoom)))
+				{
+					pair.UpdateSplitRoom(roomPair.A, pair.A.Equals(splittingRoom));
+				}
+
 				rooms.Add(roomPair.A);
 				rooms.Add(roomPair.B);
 
@@ -115,10 +120,7 @@ namespace Mathias
 
 			foreach (Room room in sortedRooms.Where(room => room.Size.Area() == biggestArea || room.Size.Area() == smallestArea))
 			{
-
-				RoomPair[] toRemove = roomPairs.Where(roomPair => roomPair.Contains(room)).ToArray();
-				foreach (RoomPair roomPair in toRemove) { roomPairs.Remove(roomPair); }
-
+				roomPairs = roomPairs.Except(roomPairs.Where(roomPair => roomPair.Contains(room))).ToList();
 				rooms.Remove(room);
 			}
 		}
