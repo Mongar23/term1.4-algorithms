@@ -6,11 +6,9 @@ namespace Mathias
 	public class RoomPair
 	{
 		public bool IsOverlappingHorizontally { get; }
-		public Rectangle Overlap { get; }
+		public Rectangle Overlap { get; private set; }
 		public Room A { get; private set; }
 		public Room B { get; private set; }
-
-		public int doorCount = 0;
 
 		public RoomPair(Room a, Room b)
 		{
@@ -33,6 +31,9 @@ namespace Mathias
 			}
 
 			Overlap = Rectangle.Intersect(a.area, b.area);
+
+			if (Overlap.IsEmpty) { Debug.LogError($"Zero overlap between {a} and {b}"); }
+
 			IsOverlappingHorizontally = Overlap.Width > Overlap.Height;
 
 			A = a;
@@ -41,13 +42,12 @@ namespace Mathias
 
 		public void UpdateSplitRoom(Room r, bool updateA)
 		{
-			if (updateA)
-			{
-				A = r;
-				return;
-			}
+			if (updateA) { A = r; }
+			else { B = r; }
 
-			B = r;
+			Overlap = Rectangle.Intersect(A.area, B.area);
+
+			if (Overlap.IsEmpty) { Debug.LogError($"Zero overlap between {A} and {B}"); }
 		}
 
 		public bool Contains(Room room) { return room.Equals(A) || room.Equals(B); }

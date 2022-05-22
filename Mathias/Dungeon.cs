@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using Mathias.Utilities;
+using Debug = Mathias.Utilities.Debug;
 
 namespace Mathias
 {
@@ -17,10 +19,13 @@ namespace Mathias
 
 		protected override void generate(int minimumRoomSize)
 		{
+			Stopwatch stopwatch = new();
+			stopwatch.Start();
+
 			this.minimumRoomSize = minimumRoomSize;
 			GenerateRooms();
-			RemoveRooms();
 			GenerateDoors();
+			RemoveRooms();
 			ColorRooms();
 		}
 
@@ -55,23 +60,26 @@ namespace Mathias
 				RoomPair roomPair = new(splitRooms.Item1, splitRooms.Item2);
 				roomPairs.Add(roomPair);
 
-				foreach (RoomPair pair in roomPairs.Where(pair => pair.Contains(splittingRoom)))
-				{
-					pair.UpdateSplitRoom(roomPair.A, pair.A.Equals(splittingRoom));
-				}
-
 				rooms.Add(roomPair.A);
 				rooms.Add(roomPair.B);
 
 				rooms.Remove(splittingRoom);
 			}
 
-			foreach (Point corner in rooms.SelectMany(room => room.GetCorners())) { blackListedPoints.Add(corner); }
+			foreach (Room room in rooms)
+			{
+				foreach (Point corner in room.GetCorners())
+				{
+					if (blackListedPoints.Contains(corner)) { continue; }
+
+					blackListedPoints.Add(corner);
+				}
+			}
 		}
 
 
 		/// <summary>
-		///     This method will split a <see cref="Room" /> horizontally or vertically based on the last split. And will return a
+		///     Will split a <see cref="Room" /> horizontally or vertically based on the last split. And will return a
 		///     tuple with the two new rooms generated on the <paramref name="baseRoom" />. If the room is too small to be split,
 		///     it will return the <paramref name="baseRoom" /> and <see langword="null" />.
 		/// </summary>
@@ -112,6 +120,10 @@ namespace Mathias
 			return new Tuple<Room, Room>(a, b);
 		}
 
+
+		/// <summary>
+		///     Will remove all rooms that have either the biggest or smallest area and remove doors intersecting with it.
+		/// </summary>
 		private void RemoveRooms()
 		{
 			Room[] sortedRooms = rooms.OrderBy(r => r.Size.Area()).ToArray();
@@ -120,33 +132,10 @@ namespace Mathias
 
 			foreach (Room room in sortedRooms.Where(room => room.Size.Area() == biggestArea || room.Size.Area() == smallestArea))
 			{
-				roomPairs = roomPairs.Except(roomPairs.Where(roomPair => roomPair.Contains(room))).ToList();
 				rooms.Remove(room);
-			}
-		}
 
-		private void GenerateDoors()
-		{
-			foreach (RoomPair roomPair in roomPairs)
-			{
-				Door door;
-
-				do
-				{
-					if (roomPair.IsOverlappingHorizontally)
-					{
-						int doorX = new Random().Next(roomPair.Overlap.X + 2, (roomPair.Overlap.X + roomPair.Overlap.Width) - 2);
-						door = new Door(doorX, roomPair.Overlap.Y);
-					}
-					else
-					{
-						int doorY = new Random().Next(roomPair.Overlap.Y + 2, (roomPair.Overlap.Y + roomPair.Overlap.Height) - 2);
-						door = new Door(roomPair.Overlap.X, doorY);
-					}
-				} while (blackListedPoints.Contains(door.location));
-
-				door.SetRooms(roomPair.A, roomPair.B);
-				doors.Add(door);
+				Door[] toRemove = doors.Where(d => room.area.Contains(d.location)).ToArray();
+				foreach (Door door in toRemove) { doors.Remove(door); }
 			}
 		}
 
@@ -154,7 +143,22 @@ namespace Mathias
 		{
 			foreach (Room room in rooms)
 			{
-				room.Color = room.GetDoorCount(doors) switch
+				int doorCount = room.GetDoorCount(doors);
+
+				if (doorCount == 0) //Check if room is an island or just pairless.
+				{
+					foreach (Room r in rooms.Where(r => room.area.IntersectsWith(r.area)))
+					{
+						if (room.Equals(r)) { continue; }
+
+						doors.Add(GenerateDoor(room, r));
+						doorCount++;
+						Debug.Log($"Saved room {room} from being left out!");
+						break;
+					}
+				}
+
+				room.Color = doorCount switch
 				{
 					0 => Color.Red,
 					1 => Color.Orange,
@@ -164,5 +168,36 @@ namespace Mathias
 				};
 			}
 		}
+
+		#region Door generation
+		private void GenerateDoors()
+		{
+			foreach (RoomPair roomPair in roomPairs) { doors.Add(GenerateDoor(roomPair)); }
+		}
+
+		private Door GenerateDoor(Room a, Room b) { return GenerateDoor(new RoomPair(a, b)); }
+
+		private Door GenerateDoor(RoomPair roomPair)
+		{
+			Door door;
+
+			do
+			{
+				if (roomPair.IsOverlappingHorizontally)
+				{
+					int doorX = new Random().Next(roomPair.Overlap.X + 2, (roomPair.Overlap.X + roomPair.Overlap.Width) - 2);
+					door = new Door(doorX, roomPair.Overlap.Y);
+				}
+				else
+				{
+					int doorY = new Random().Next(roomPair.Overlap.Y + 2, (roomPair.Overlap.Y + roomPair.Overlap.Height) - 2);
+					door = new Door(roomPair.Overlap.X, doorY);
+				}
+			} while (blackListedPoints.Contains(door.location));
+
+			door.SetRooms(roomPair.A, roomPair.B);
+			return door;
+		}
+		#endregion
 	}
 }
