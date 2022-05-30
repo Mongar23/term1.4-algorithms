@@ -13,10 +13,11 @@ namespace Mathias.Utilities
 		///     Log a <paramref name="message" /> to the console with a red "[ERROR]" tag in front of it.
 		/// </summary>
 		/// <param name="message">The text that has to be displayed in the console</param>
-		public static void LogError(string message)
+		public static void LogError(string message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string callerPath = null)
 		{
 			Console.ForegroundColor = ConsoleColor.Red;
-			Console.Write("[ERROR] ");
+			string fileName = callerPath.Split('\\').Last();
+			Console.Write($"[ERROR {fileName}:{lineNumber}] ");
 			Console.ResetColor();
 			Console.WriteLine(message);
 		}
@@ -38,10 +39,11 @@ namespace Mathias.Utilities
 		///     Log a <paramref name="message" /> to the console with a yellow "[WARNING]" tag in front of it.
 		/// </summary>
 		/// <param name="message">The text that has to be displayed in the console</param>
-		public static void LogWaring(string message)
+		public static void LogWaring(string message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string callerPath = null)
 		{
 			Console.ForegroundColor = ConsoleColor.Yellow;
-			Console.Write("[WARNING] ");
+			string fileName = callerPath.Split('\\').Last();
+			Console.Write($"[WARNING {fileName}:{lineNumber}] ");
 			Console.ResetColor();
 			Console.WriteLine(message);
 		}

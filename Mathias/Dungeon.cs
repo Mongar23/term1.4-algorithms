@@ -4,14 +4,16 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using Mathias.Utilities;
+using Debug = Mathias.Utilities.Debug;
 
 namespace Mathias
 {
 	public class Dungeon : DungeonBase
 	{
 		private readonly List<Point> blackListedPoints = new();
-		private bool drawBlacklist = false;
+		private readonly Random random = new(1);
 
+		private bool drawBlacklist = false;
 		private int minimumRoomSize;
 		private List<RoomPair> roomPairs = new();
 
@@ -60,7 +62,7 @@ namespace Mathias
 
 			while (rooms.Count > unsplitableRooms.Count)
 			{
-				Room splittingRoom = rooms[new Random().Next(0, rooms.Count)];
+				Room splittingRoom = rooms[random.Next(0, rooms.Count)];
 
 				if (unsplitableRooms.Contains(splittingRoom)) { continue; }
 
@@ -82,10 +84,7 @@ namespace Mathias
 				rooms.Remove(splittingRoom);
 			}
 
-			foreach (Room room in rooms)
-			{
-				foreach (Point corner in room.GetCorners()) { blackListedPoints.Add(corner); }
-			}
+			foreach (Point corner in rooms.SelectMany(room => room.GetCorners())) { blackListedPoints.Add(corner); }
 		}
 
 
@@ -108,7 +107,7 @@ namespace Mathias
 				if (baseRoom.Size.Width - minimumRoomSize < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
 
 
-				int cutSize = baseRoom.Size.Width - new Random().Next(minimumRoomSize, baseRoom.Size.Width - minimumRoomSize);
+				int cutSize = baseRoom.Size.Width - random.Next(minimumRoomSize, baseRoom.Size.Width - minimumRoomSize);
 
 				a = new Room(baseRoom.Position.X, baseRoom.Position.Y, cutSize + 1, baseRoom.Size.Height);
 				b = new Room(baseRoom.Position.X + cutSize, baseRoom.Position.Y, baseRoom.Size.Width - cutSize, baseRoom.Size.Height);
@@ -120,7 +119,7 @@ namespace Mathias
 				if (baseRoom.Size.Height - minimumRoomSize < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
 
 
-				int cutSize = baseRoom.Size.Height - new Random().Next(minimumRoomSize, baseRoom.Size.Height - minimumRoomSize);
+				int cutSize = baseRoom.Size.Height - random.Next(minimumRoomSize, baseRoom.Size.Height - minimumRoomSize);
 
 				a = new Room(baseRoom.Position.X, baseRoom.Position.Y, baseRoom.Size.Width, cutSize + 1);
 				b = new Room(baseRoom.Position.X, baseRoom.Position.Y + cutSize, baseRoom.Size.Width, baseRoom.Size.Height - cutSize);
@@ -143,15 +142,15 @@ namespace Mathias
 
 			foreach (Room room in sortedRooms.Where(room => room.Size.Area() == biggestArea || room.Size.Area() == smallestArea))
 			{
-				rooms.Remove(room);
-
 				foreach (Point corner in room.GetCorners()) { blackListedPoints.Remove(corner); }
 
 				Door[] toRemove = doors.Where(d => room.area.Contains(d.location)).ToArray();
 				foreach (Door door in toRemove) { doors.Remove(door); }
+
+				rooms.Remove(room);
+				RestoreDoorsForRemovedRoom(room);
 			}
 		}
-
 
 		/// <summary>
 		///     Assigns colors based on a <see cref="Room" />'s <see cref="Door" /> count. In case a <see cref="Room" /> has 0
@@ -174,6 +173,10 @@ namespace Mathias
 					{
 						if (room.Equals(r)) { continue; }
 
+						Door door = GenerateDoor(room, r);
+
+						if (door == null) { continue; }
+
 						doors.Add(GenerateDoor(room, r));
 						doorCount++;
 						break;
@@ -184,20 +187,28 @@ namespace Mathias
 				{
 					0 => Color.Red,
 					1 => Color.Orange,
-					2 => Color.Yellow,
-					>= 3 => Color.Green,
+					2 => Color.FromArgb(252, 227, 0),
+					>= 3 => Color.FromArgb(0, 252, 60),
 					_ => throw new ArgumentOutOfRangeException()
 				};
 			}
 		}
 
 		#region Door generation
+
 		/// <summary>
 		///     Generate doors for all <see cref="RoomPair" />s in the roomPair collection.
 		/// </summary>
 		private void GenerateDoors()
 		{
-			foreach (RoomPair roomPair in roomPairs) { doors.Add(GenerateDoor(roomPair)); }
+			foreach (RoomPair roomPair in roomPairs)
+			{
+				Door door = GenerateDoor(roomPair);
+
+				if (door == null) { continue; }
+
+				doors.Add(door);
+			}
 		}
 
 		/// <summary>
@@ -213,7 +224,7 @@ namespace Mathias
 		/// <returns>
 		///     A newly created door to connect <see cref="Room" />s <paramref name="a" /> and <paramref name="b" />
 		/// </returns>
-		private Door GenerateDoor(Room a, Room b) { return GenerateDoor(new RoomPair(a, b)); }
+		private Door GenerateDoor(Room a, Room b) => GenerateDoor(new RoomPair(a, b));
 
 		/// <summary>
 		///     Creates a new door to connect the <see cref="Room" />s in the <see cref="RoomPair" />. It will place an door
@@ -230,12 +241,22 @@ namespace Mathias
 			{
 				if (roomPair.IsOverlappingHorizontally)
 				{
-					int doorX = new Random().Next(roomPair.Overlap.X + 2, (roomPair.Overlap.X + roomPair.Overlap.Width) - 2);
+					int min = roomPair.Overlap.X + 2;
+					int max = (roomPair.Overlap.X + roomPair.Overlap.Width) - 2;
+
+					if (min > max) { return null; }
+
+					int doorX = random.Next(min, max);
 					door = new Door(doorX, roomPair.Overlap.Y);
 				}
 				else
 				{
-					int doorY = new Random().Next(roomPair.Overlap.Y + 2, (roomPair.Overlap.Y + roomPair.Overlap.Height) - 2);
+					int min = roomPair.Overlap.Y + 2;
+					int max = (roomPair.Overlap.Y + roomPair.Overlap.Height) - 2;
+
+					if (min > max) { return null; }
+
+					int doorY = random.Next(min, max);
 					door = new Door(roomPair.Overlap.X, doorY);
 				}
 			} while (blackListedPoints.Contains(door.location));
@@ -243,6 +264,36 @@ namespace Mathias
 			door.SetRooms(roomPair.A, roomPair.B);
 			return door;
 		}
+
+		private void RestoreDoorsForRemovedRoom(Room room)
+		{
+			foreach (Room neighbor in room.GetNeighbors(rooms))
+			{
+				if (neighbor.Equals(room)) { continue; }
+
+				foreach (Room farNeighbor in neighbor.GetNeighbors(rooms))
+				{
+					if (neighbor.Equals(room) || neighbor.Equals(farNeighbor)) { continue; }
+
+					Rectangle overLap = Rectangle.Intersect(neighbor.area, farNeighbor.area);
+
+					if (overLap.IsEmpty) { continue; }
+
+					if (doors.Any(door => overLap.Contains(door.location))) // already contains a door in the overlap
+					{
+						continue;
+					}
+
+					Door door = GenerateDoor(neighbor, farNeighbor);
+					if (door == null) { continue; }
+
+					doors.Add(door);
+					Debug.Log($"Generated door for {neighbor}\t{farNeighbor}");
+					break;
+				}
+			}
+		}
+
 		#endregion
 	}
 }

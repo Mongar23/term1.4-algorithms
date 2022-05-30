@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 /**
  * This class represents (the data for) a Room, at this moment only a rectangle in the dungeon.
@@ -45,6 +46,11 @@ public class Room
 		};
 	}
 
+	public Room[] GetNeighbors(IEnumerable<Room> roomsToCheck)
+	{
+		return roomsToCheck.Where(r => area.IntersectsWith(r.area)).ToArray();
+	}
+
 	public int GetDoorCount(IEnumerable<Door> doorsToCheck)
 	{
 		int count = 0;
@@ -63,8 +69,6 @@ public class Room
 
 	public override string ToString() { return $"room(({Position.X}, {Position.Y}), {Size.Width}*{Size.Height})"; }
 
-	//TODO: Cnhage to equalto
-
 	public override bool Equals(object obj) { return Equals(obj as Room); }
 
 	private bool Equals(Room other)
@@ -73,4 +77,6 @@ public class Room
 
 		return Size.Width == other.Size.Width && Size.Height == other.Size.Height;
 	}
+
+	public override int GetHashCode() => base.GetHashCode();
 }
