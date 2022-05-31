@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using Mathias.Utilities;
-using Debug = Mathias.Utilities.Debug;
 
 namespace Mathias
 {
@@ -13,9 +12,9 @@ namespace Mathias
 		private readonly List<Point> blackListedPoints = new();
 		private readonly Random random = new(1);
 
-		private bool drawBlacklist = false;
+		private readonly bool drawBlacklist = false;
 		private int minimumRoomSize;
-		private List<RoomPair> roomPairs = new();
+		private readonly List<RoomPair> roomPairs = new();
 
 		public Dungeon(Size pSize) : base(pSize) { }
 
@@ -169,15 +168,15 @@ namespace Mathias
 
 				if (doorCount == 0) //Check if room is an island or just pair-less.
 				{
-					foreach (Room r in rooms.Where(r => room.area.IntersectsWith(r.area)))
+					foreach (Room neighbor in room.GetNeighbors(rooms))
 					{
-						if (room.Equals(r)) { continue; }
+						if (room.Equals(neighbor)) { continue; }
 
-						Door door = GenerateDoor(room, r);
+						Door door = GenerateDoor(room, neighbor);
 
 						if (door == null) { continue; }
 
-						doors.Add(GenerateDoor(room, r));
+						doors.Add(door);
 						doorCount++;
 						break;
 					}
@@ -265,11 +264,15 @@ namespace Mathias
 			return door;
 		}
 
-		private void RestoreDoorsForRemovedRoom(Room room)
+		/// <summary>
+		///     Add extra <see cref="Door" />s to the neighbors of the removed <see cref="Room" /> and their neighbors.
+		/// </summary>
+		/// <param name="removedRoom">The room that has been removed and to get the first pair of neighbors from.</param>
+		private void RestoreDoorsForRemovedRoom(Room removedRoom)
 		{
-			foreach (Room neighbor in room.GetNeighbors(rooms))
+			foreach (Room neighbor in removedRoom.GetNeighbors(rooms))
 			{
-				if (neighbor.Equals(room)) { continue; }
+				if (neighbor.Equals(removedRoom)) { continue; }
 
 				foreach (Room farNeighbor in neighbor.GetNeighbors(rooms))
 				{
@@ -279,16 +282,13 @@ namespace Mathias
 
 					if (overLap.IsEmpty) { continue; }
 
-					if (doors.Any(door => overLap.Contains(door.location))) // already contains a door in the overlap
-					{
-						continue;
-					}
+					// Already contains a door in the overlap.
+					if (doors.Any(door => overLap.Contains(door.location))) { continue; }
 
 					Door door = GenerateDoor(neighbor, farNeighbor);
 					if (door == null) { continue; }
 
 					doors.Add(door);
-					Debug.Log($"Generated door for {neighbor}\t{farNeighbor}");
 					break;
 				}
 			}

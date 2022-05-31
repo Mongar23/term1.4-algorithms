@@ -29,5 +29,5 @@ public class Door
 		roomB = b;
 	}
 
-	public override string ToString() { return $"door({location.X},{location.Y})\t\tconnecting rooms {roomA}, {roomB}"; }
+	public override string ToString() { return $"door({location.X},{location.Y})\t\tconnecting rooms {roomA}\t{roomB}"; }
 }
