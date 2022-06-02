@@ -170,8 +170,6 @@ namespace Mathias
 				{
 					foreach (Room neighbor in room.GetNeighbors(rooms))
 					{
-						if (room.Equals(neighbor)) { continue; }
-
 						Door door = GenerateDoor(room, neighbor);
 
 						if (door == null) { continue; }
@@ -186,7 +184,7 @@ namespace Mathias
 				{
 					0 => Color.Red,
 					1 => Color.Orange,
-					2 => Color.FromArgb(252, 227, 0),
+					2 => Color.FromArgb(252, 227, 0), 
 					>= 3 => Color.FromArgb(0, 252, 60),
 					_ => throw new ArgumentOutOfRangeException()
 				};
@@ -272,12 +270,8 @@ namespace Mathias
 		{
 			foreach (Room neighbor in removedRoom.GetNeighbors(rooms))
 			{
-				if (neighbor.Equals(removedRoom)) { continue; }
-
 				foreach (Room farNeighbor in neighbor.GetNeighbors(rooms))
 				{
-					if (neighbor.Equals(room) || neighbor.Equals(farNeighbor)) { continue; }
-
 					Rectangle overLap = Rectangle.Intersect(neighbor.area, farNeighbor.area);
 
 					if (overLap.IsEmpty) { continue; }

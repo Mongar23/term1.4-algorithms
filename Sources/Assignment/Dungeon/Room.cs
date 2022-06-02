@@ -40,15 +40,22 @@ public class Room
 		return new[]
 		{
 			Position,
-			new Point(Position.X + Size.Width - 1, Position.Y),
-			new Point(Position.X + Size.Width - 1, Position.Y + Size.Height - 1),
-			new Point(Position.X, Position.Y + Size.Height - 1)
+			new Point((Position.X + Size.Width) - 1, Position.Y),
+			new Point((Position.X + Size.Width) - 1, (Position.Y + Size.Height) - 1),
+			new Point(Position.X, (Position.Y + Size.Height) - 1)
 		};
 	}
 
+	/// <summary>
+	///     Get an <see cref="Room" /> <see langword="array" /> containing the current <see cref="Room" />'s neighbors. To
+	///     determine the neighbors all of the <see cref="Room" />s in <paramref name="roomsToCheck" /> will be evaluated
+	///     whether their area intersects with the current <see cref="Room" />'s area.
+	/// </summary>
+	/// <param name="roomsToCheck">The collection to search through to find intersecting rooms.</param>
+	/// <returns>An array of <see cref="Room" />s which are intersecting with the current <see cref="Room" /></returns>
 	public Room[] GetNeighbors(IEnumerable<Room> roomsToCheck)
 	{
-		return roomsToCheck.Where(r => area.IntersectsWith(r.area)).ToArray();
+		return roomsToCheck.Where(room => !Equals(room) && area.IntersectsWith(room.area)).ToArray();
 	}
 
 	public int GetDoorCount(IEnumerable<Door> doorsToCheck)
@@ -57,9 +64,9 @@ public class Room
 
 		foreach (Door door in doorsToCheck)
 		{
-			if (door.location.X < Position.X || door.location.X > Position.X + Size.Width) { continue; }
+			if(door.location.X < Position.X || door.location.X > Position.X + Size.Width) { continue; }
 
-			if (door.location.Y < Position.Y || door.location.Y > Position.Y + Size.Height) { continue; }
+			if(door.location.Y < Position.Y || door.location.Y > Position.Y + Size.Height) { continue; }
 
 			count++;
 		}
@@ -67,16 +74,16 @@ public class Room
 		return count;
 	}
 
-	public override string ToString() { return $"room(({Position.X}, {Position.Y}), {Size.Width}*{Size.Height})"; }
+	public override string ToString() => $"room(({Position.X}, {Position.Y}), {Size.Width}*{Size.Height})";
 
-	public override bool Equals(object obj) { return Equals(obj as Room); }
+	public override bool Equals(object obj) => Equals(obj as Room);
+
+	public override int GetHashCode() => base.GetHashCode();
 
 	private bool Equals(Room other)
 	{
-		if (Position.X != other.Position.X || Position.Y != other.Position.Y) { return false; }
+		if(Position.X != other.Position.X || Position.Y != other.Position.Y) { return false; }
 
 		return Size.Width == other.Size.Width && Size.Height == other.Size.Height;
 	}
-
-	public override int GetHashCode() => base.GetHashCode();
 }
