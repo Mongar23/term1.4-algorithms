@@ -12,7 +12,7 @@ using System.Drawing;
  * 
  * See SampleDungeonNodeGraph for more info on the todos.
  */
-abstract class NodeGraph : Canvas
+public abstract class NodeGraphBase : Canvas
 {
 	//references to all the nodes in our nodegraph
 	public readonly List<Node> nodes = new List<Node>();
@@ -38,7 +38,7 @@ abstract class NodeGraph : Canvas
 	/** 
 	 * Construct a nodegraph with the given screen dimensions, eg 800x600
 	 */
-	public NodeGraph(int pWidth, int pHeight, int pNodeSize) : base(pWidth, pHeight)
+	public NodeGraphBase(int pWidth, int pHeight, int pNodeSize) : base(pWidth, pHeight)
 	{
 		nodeSize = pNodeSize;
 
@@ -203,5 +203,4 @@ abstract class NodeGraph : Canvas
 
 		return mouseToNodeDistance < nodeSize;
 	}
-
 }

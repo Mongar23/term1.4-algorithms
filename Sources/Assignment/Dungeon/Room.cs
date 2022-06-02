@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Mathias.Utilities;
 
 /**
  * This class represents (the data for) a Room, at this moment only a rectangle in the dungeon.
@@ -11,7 +12,7 @@ public class Room
 	public Color Color { get; set; }
 	public Point Position { get; }
 	public Size Size { get; }
-
+	public List<Door> doors;
 	public Rectangle area;
 
 	public Room(Rectangle pArea)
@@ -60,18 +61,9 @@ public class Room
 
 	public int GetDoorCount(IEnumerable<Door> doorsToCheck)
 	{
-		int count = 0;
+		if(doors == null) { SetDoors(doorsToCheck); }
 
-		foreach (Door door in doorsToCheck)
-		{
-			if(door.location.X < Position.X || door.location.X > Position.X + Size.Width) { continue; }
-
-			if(door.location.Y < Position.Y || door.location.Y > Position.Y + Size.Height) { continue; }
-
-			count++;
-		}
-
-		return count;
+		return doors.Count;
 	}
 
 	public override string ToString() => $"room(({Position.X}, {Position.Y}), {Size.Width}*{Size.Height})";
@@ -79,6 +71,34 @@ public class Room
 	public override bool Equals(object obj) => Equals(obj as Room);
 
 	public override int GetHashCode() => base.GetHashCode();
+
+	private void SetDoors(IEnumerable<Door> doorsToCheck)
+	{
+		List<Door> doors = new();
+
+		foreach (Door door in doorsToCheck)
+		{
+			if(!area.Contains(door.location)) { continue; }
+
+			if(door.RoomA == null)
+			{
+				door.RoomA = this;
+				doors.Add(door);
+				continue;
+			}
+
+			if(door.RoomB == null)
+			{
+				door.RoomB = this;
+				doors.Add(door);
+				continue;
+			}
+
+			Debug.LogWaring($"This door is already connecting two rooms: {door}");
+		}
+
+		this.doors = doors;
+	}
 
 	private bool Equals(Room other)
 	{

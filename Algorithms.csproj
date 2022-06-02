@@ -69,6 +69,7 @@
     <Compile Include="GXPEngine\Utils\Time.cs" />
     <Compile Include="GXPEngine\Utils\Utils.cs" />
     <Compile Include="Mathias\Dungeon.cs" />
+    <Compile Include="Mathias\NodeGraph.cs" />
     <Compile Include="Mathias\RoomPair.cs" />
     <Compile Include="Mathias\Utilities\Debug.cs" />
     <Compile Include="Mathias\Utilities\SizeExtensions.cs" />
@@ -84,7 +85,7 @@
     <Compile Include="Sources\Assignment\Agent\SampleNodeGraphAgent.cs" />
     <Compile Include="Sources\Assignment\Tiles\SampleTiledView.cs" />
     <Compile Include="Sources\Assignment\NodeGraph\Node.cs" />
-    <Compile Include="Sources\Assignment\NodeGraph\NodeGraph.cs" />
+    <Compile Include="Sources\Assignment\NodeGraph\NodeGraphBase.cs" />
     <Compile Include="Sources\Assignment\Tiles\TileType.cs" />
     <Compile Include="Sources\Assignment\Tiles\TiledView.cs" />
     <Compile Include="Program.cs" />

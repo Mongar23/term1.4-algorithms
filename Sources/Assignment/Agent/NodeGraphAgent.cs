@@ -14,9 +14,9 @@ abstract class NodeGraphAgent : AnimationSprite
 	protected const int FAST_TRAVEL_SPEED = 10;
 	protected const int SPEED_UP_KEY = Key.LEFT_CTRL;
 
-	public NodeGraphAgent(NodeGraph pNodeGraph) : base("assets/orc.png", 4, 2, 7)
+	public NodeGraphAgent(NodeGraphBase pNodeGraphBase) : base("assets/orc.png", 4, 2, 7)
 	{
-		Debug.Assert(pNodeGraph != null, "Please pass in a node graph.");
+		Debug.Assert(pNodeGraphBase != null, "Please pass in a node graph.");
 
 		SetOrigin(width / 2, height / 2);
 		System.Console.WriteLine(this.GetType().Name + " created.");

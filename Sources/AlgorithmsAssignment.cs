@@ -15,11 +15,13 @@ using Mathias;
  */
 class AlgorithmsAssignment : Game
 {
+	public static Grid Grid { get; private set; }
+
 	//Required for assignment 1
-	DungeonBase _dungeonBase = null;
+	DungeonBase _dungeon = null;
 
 	//Required for assignment 2
-	NodeGraph _graph = null;
+	NodeGraphBase _graph = null;
 	TiledView _tiledView = null;
 	NodeGraphAgent _agent = null;
 
@@ -36,13 +38,14 @@ class AlgorithmsAssignment : Game
 		GL.glfwSetWindowTitle("Algorithms Game");
 		
 		Grid grid = new (width, height, SCALE);
+		Grid = grid;
 		Size size = new (width / SCALE, height / SCALE);
 
-		_dungeonBase = new Dungeon(size);
-		if (_dungeonBase != null)
+		_dungeon = new Dungeon(size);
+		if (_dungeon != null)
 		{
-			_dungeonBase.scale = SCALE;
-			_dungeonBase.Generate(MIN_ROOM_SIZE);
+			_dungeon.scale = SCALE;
+			_dungeon.Generate(MIN_ROOM_SIZE);
 		}
 
 		/////////////////////////////////////////////////////////////////////////////////////////
@@ -58,10 +61,11 @@ class AlgorithmsAssignment : Game
 		//TODO: Study the SampleDungeonNodeGraph class and try it out below
 		//TODO: Comment out the SampleDungeonNodeGraph again, implement a HighLevelDungeonNodeGraph class and uncomment it below
 
-		//_graph = new SampleDungeonNodeGraph(_dungeon);
+		_graph = new NodeGraph(_dungeon);
 		//_graph = new HighLevelDungeonNodeGraph(_dungeon);
 		//_graph = new LowLevelDungeonNodeGraph(_dungeon);
 
+		
 		if (_graph != null) _graph.Generate();
 
 		/////////////////////////////////////////////////////////////
@@ -137,7 +141,7 @@ class AlgorithmsAssignment : Game
 		/// LOOK BUT DON'T TOUCH :)
 
 		if (grid != null) AddChild(grid);
-		if (_dungeonBase != null) AddChild(_dungeonBase);
+		if (_dungeon != null) AddChild(_dungeon);
 		if (_graph != null) AddChild(_graph);
 		if (_tiledView != null) AddChild(_tiledView);
 		if (_pathFinder != null) AddChild(_pathFinder);				//pathfinder on top of that

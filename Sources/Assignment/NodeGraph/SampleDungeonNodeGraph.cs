@@ -13,7 +13,7 @@ using System.Drawing;
  * TODO:
  * - Create a subclass of this class, and override the generate method, see the generate method below for an example.
  */
- class SampleDungeonNodeGraph : NodeGraph
+class SampleDungeonNodeGraph : NodeGraphBase
 {
 	protected DungeonBase dungeonBase;
 
@@ -72,5 +72,4 @@ using System.Drawing;
 		float centerY = (pLocation.Y + 0.5f) * dungeonBase.scale;
 		return new Point((int)centerX, (int)centerY);
 	}
-
 }

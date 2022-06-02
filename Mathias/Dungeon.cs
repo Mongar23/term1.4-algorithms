@@ -4,13 +4,14 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using Mathias.Utilities;
+using Debug = Mathias.Utilities.Debug;
 
 namespace Mathias
 {
 	public class Dungeon : DungeonBase
 	{
 		private readonly List<Point> blackListedPoints = new();
-		private readonly Random random = new(1);
+		private readonly Random random = new();
 
 		private readonly bool drawBlacklist = false;
 		private int minimumRoomSize;
@@ -28,6 +29,14 @@ namespace Mathias
 			GenerateDoors();
 			RemoveRooms();
 			ColorRooms();
+
+			int gridColumns = AlgorithmsAssignment.Grid.Columns;
+			rooms = rooms.OrderBy(room => room.Position.X + room.Position.Y * gridColumns).ToList();
+
+			foreach (Door door in doors)
+			{
+				Debug.Log(door.ToString());
+			}
 		}
 
 		protected override void drawRooms(IEnumerable<Room> rooms, Pen wallColor, Brush fillColor = null)
@@ -258,7 +267,6 @@ namespace Mathias
 				}
 			} while (blackListedPoints.Contains(door.location));
 
-			door.SetRooms(roomPair.A, roomPair.B);
 			return door;
 		}
 
