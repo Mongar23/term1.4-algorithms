@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using GXPEngine;
 using GXPEngine.OpenGL;
@@ -16,6 +17,7 @@ using Mathias;
 class AlgorithmsAssignment : Game
 {
 	public static Grid Grid { get; private set; }
+	public static Random Random { get; private set; }
 
 	//Required for assignment 1
 	DungeonBase _dungeon = null;
@@ -23,7 +25,7 @@ class AlgorithmsAssignment : Game
 	//Required for assignment 2
 	NodeGraphBase _graph = null;
 	TiledView _tiledView = null;
-	NodeGraphAgent _agent = null;
+	NodeGraphAgentBase _agent = null;
 
 	//Required for assignment 3
 	PathFinder _pathFinder = null;
@@ -36,6 +38,7 @@ class AlgorithmsAssignment : Game
 	{
 		GL.ClearColor(1, 1, 1, 1);
 		GL.glfwSetWindowTitle("Algorithms Game");
+		Random = new Random(1);
 		
 		Grid grid = new (width, height, SCALE);
 		Grid = grid;
@@ -48,33 +51,12 @@ class AlgorithmsAssignment : Game
 			_dungeon.Generate(MIN_ROOM_SIZE);
 		}
 
-		/////////////////////////////////////////////////////////////////////////////////////////
-		/// ASSIGNMENT 2 : GRAPHS, AGENTS & TILES
-		///							
-		/// SKIP THIS BLOCK UNTIL YOU'VE FINISHED ASSIGNMENT 1 AND ASKED FOR TEACHER FEEDBACK !
-
-		/////////////////////////////////////////////////////////////
-		//Assignment 2.1 Sufficient (Mandatory) High Level NodeGraph
-		//
-		//TODO: Study assignment 2.1 on blackboard
-		//TODO: Study the NodeGraph and Node classes
-		//TODO: Study the SampleDungeonNodeGraph class and try it out below
-		//TODO: Comment out the SampleDungeonNodeGraph again, implement a HighLevelDungeonNodeGraph class and uncomment it below
+		
 
 		_graph = new NodeGraph(_dungeon);
-		//_graph = new HighLevelDungeonNodeGraph(_dungeon);
-		//_graph = new LowLevelDungeonNodeGraph(_dungeon);
+		_graph?.Generate();
 
-		
-		if (_graph != null) _graph.Generate();
-
-		/////////////////////////////////////////////////////////////
-		//Assignment 2.1 Sufficient (Mandatory) OnGraphWayPointAgent
-		//
-		//TODO: Study the NodeGraphAgent class
-		//TODO: Study the SampleNodeGraphAgent class and try it out below
-		//TODO: Comment out the SampleNodeGraphAgent again, implement an OnGraphWayPointAgent class and uncomment it below
-
+		_agent = new NodeGraphAgent(_graph);
 		//_agent = new SampleNodeGraphAgent(_graph);
 		//_agent = new OnGraphWayPointAgent(_graph);
 

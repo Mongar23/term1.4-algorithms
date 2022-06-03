@@ -8,15 +8,15 @@ using System.Diagnostics;
  * Create a subclass of this class, override Update and call these methods as required for your specific assignment.
  * See SampleNodeGraphAgent for an example.
  */
-abstract class NodeGraphAgent : AnimationSprite
+public abstract class NodeGraphAgentBase : AnimationSprite
 {
 	protected const int REGULAR_SPEED = 1;
 	protected const int FAST_TRAVEL_SPEED = 10;
 	protected const int SPEED_UP_KEY = Key.LEFT_CTRL;
-
-	public NodeGraphAgent(NodeGraphBase pNodeGraphBase) : base("assets/orc.png", 4, 2, 7)
+	
+	public NodeGraphAgentBase(NodeGraphBase nodeGraph) : base("assets/orc.png", 4, 2, 7)
 	{
-		Debug.Assert(pNodeGraphBase != null, "Please pass in a node graph.");
+		Debug.Assert(nodeGraph != null, "Please pass in a node graph.");
 
 		SetOrigin(width / 2, height / 2);
 		System.Console.WriteLine(this.GetType().Name + " created.");

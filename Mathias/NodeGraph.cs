@@ -21,11 +21,11 @@ namespace Mathias
 			Room firstRoom = dungeon.rooms[0];
 
 			roomsToNode.Enqueue(firstRoom);
+			nodedRooms.Add(firstRoom);
 
 			while (roomsToNode.Count > 0)
 			{
 				Room room = roomsToNode.Dequeue();
-				nodedRooms.Add(room);
 
 				Node roomNode = new(GetRoomCenter(room));
 				nodes.Add(roomNode);
@@ -47,17 +47,14 @@ namespace Mathias
 
 					if(!nodedRooms.Contains(door.RoomA))
 					{
-						if(door.RoomA == null) { continue; }
-
 						roomsToNode.Enqueue(door.RoomA);
+						nodedRooms.Add(door.RoomA);
 					}
 
-					if(!nodedRooms.Contains(door.RoomB))
-					{
-						if(door.RoomB == null) { continue; }
+					if(nodedRooms.Contains(door.RoomB)) { continue; }
 
-						roomsToNode.Enqueue(door.RoomB);
-					}
+					roomsToNode.Enqueue(door.RoomB);
+					nodedRooms.Add(door.RoomB);
 				}
 			}
 		}
