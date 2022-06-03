@@ -6,10 +6,16 @@ using System.Drawing;
  */
 class Grid : Canvas
 {
+	public int Rows { get; }
+	public int Columns { get; }
+
 	public Grid(int pWidth, int pHeight, int pGridSize) : base(pWidth, pHeight)
 	{
 		int columns = width / pGridSize;
 		int rows = height / pGridSize;
+
+		Rows = rows;
+		Columns = columns;
 
 		for (int i = 0; i <= columns; i++)
 		{

@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using Mathias.Utilities;
+using Debug = Mathias.Utilities.Debug;
 
 namespace Mathias
 {
 	public class Dungeon : DungeonBase
 	{
 		private readonly List<Point> blackListedPoints = new();
-		private readonly Random random = new(1);
 
 		private readonly bool drawBlacklist = false;
 		private int minimumRoomSize;
@@ -28,6 +28,9 @@ namespace Mathias
 			GenerateDoors();
 			RemoveRooms();
 			ColorRooms();
+
+			int gridColumns = AlgorithmsAssignment.Grid.Columns;
+			rooms = rooms.OrderBy(room => room.Position.X + room.Position.Y * gridColumns).ToList();
 		}
 
 		protected override void drawRooms(IEnumerable<Room> rooms, Pen wallColor, Brush fillColor = null)
@@ -61,7 +64,7 @@ namespace Mathias
 
 			while (rooms.Count > unsplitableRooms.Count)
 			{
-				Room splittingRoom = rooms[random.Next(0, rooms.Count)];
+				Room splittingRoom = rooms[AlgorithmsAssignment.Random.Next(0, rooms.Count)];
 
 				if (unsplitableRooms.Contains(splittingRoom)) { continue; }
 
@@ -106,7 +109,7 @@ namespace Mathias
 				if (baseRoom.Size.Width - minimumRoomSize < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
 
 
-				int cutSize = baseRoom.Size.Width - random.Next(minimumRoomSize, baseRoom.Size.Width - minimumRoomSize);
+				int cutSize = baseRoom.Size.Width - AlgorithmsAssignment.Random.Next(minimumRoomSize, baseRoom.Size.Width - minimumRoomSize);
 
 				a = new Room(baseRoom.Position.X, baseRoom.Position.Y, cutSize + 1, baseRoom.Size.Height);
 				b = new Room(baseRoom.Position.X + cutSize, baseRoom.Position.Y, baseRoom.Size.Width - cutSize, baseRoom.Size.Height);
@@ -118,7 +121,7 @@ namespace Mathias
 				if (baseRoom.Size.Height - minimumRoomSize < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
 
 
-				int cutSize = baseRoom.Size.Height - random.Next(minimumRoomSize, baseRoom.Size.Height - minimumRoomSize);
+				int cutSize = baseRoom.Size.Height - AlgorithmsAssignment.Random.Next(minimumRoomSize, baseRoom.Size.Height - minimumRoomSize);
 
 				a = new Room(baseRoom.Position.X, baseRoom.Position.Y, baseRoom.Size.Width, cutSize + 1);
 				b = new Room(baseRoom.Position.X, baseRoom.Position.Y + cutSize, baseRoom.Size.Width, baseRoom.Size.Height - cutSize);
@@ -243,7 +246,7 @@ namespace Mathias
 
 					if (min > max) { return null; }
 
-					int doorX = random.Next(min, max);
+					int doorX = AlgorithmsAssignment.Random.Next(min, max);
 					door = new Door(doorX, roomPair.Overlap.Y);
 				}
 				else
@@ -253,12 +256,11 @@ namespace Mathias
 
 					if (min > max) { return null; }
 
-					int doorY = random.Next(min, max);
+					int doorY = AlgorithmsAssignment.Random.Next(min, max);
 					door = new Door(roomPair.Overlap.X, doorY);
 				}
 			} while (blackListedPoints.Contains(door.location));
 
-			door.SetRooms(roomPair.A, roomPair.B);
 			return door;
 		}
 

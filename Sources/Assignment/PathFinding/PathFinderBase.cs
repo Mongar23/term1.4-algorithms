@@ -12,13 +12,13 @@ using System.Drawing;
  * TODO:
  * - create a subclass for this class and override the generate method (See SamplePathFinder for an example)
  */
-abstract class PathFinder : Canvas
+public abstract class PathFinderBase : Canvas
 {
 	protected Node _startNode;							
 	protected Node _endNode;
 	protected List<Node> _lastCalculatedPath = null;
 
-	protected NodeGraph _nodeGraph;
+	protected NodeGraphBase nodeGraphBase;
 
 	//some values for drawing the path
 	private Pen _outlinePen = new Pen(Color.Black, 4);
@@ -29,11 +29,11 @@ abstract class PathFinder : Canvas
 	private Brush _endNodeColor = Brushes.Red;
 	private Brush _pathNodeColor = Brushes.Yellow;
 
-	public PathFinder (NodeGraph pGraph) : base (pGraph.width, pGraph.height)
+	public PathFinderBase (NodeGraphBase pGraphBase) : base (pGraphBase.width, pGraphBase.height)
 	{
-		_nodeGraph = pGraph;
-		_nodeGraph.OnNodeShiftLeftClicked += (node) => { _startNode = node; draw(); };
-		_nodeGraph.OnNodeShiftRightClicked += (node) => { _endNode = node; draw(); };
+		nodeGraphBase = pGraphBase;
+		nodeGraphBase.OnNodeShiftLeftClicked += (node) => { _startNode = node; draw(); };
+		nodeGraphBase.OnNodeShiftRightClicked += (node) => { _endNode = node; draw(); };
 
 		Console.WriteLine("\n-----------------------------------------------------------------------------");
 		Console.WriteLine(this.GetType().Name + " created.");
@@ -120,7 +120,7 @@ abstract class PathFinder : Canvas
 
 	protected virtual void drawNode(Node pNode, Brush pColor)
 	{
-		int nodeSize = _nodeGraph.nodeSize+2;
+		int nodeSize = nodeGraphBase.nodeSize+2;
 
 		//colored fill
 		graphics.FillEllipse(

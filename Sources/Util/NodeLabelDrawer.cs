@@ -9,17 +9,17 @@ class NodeLabelDrawer : Canvas
 {
 	private Font _labelFont;
 	private bool _showLabels = false;
-	private NodeGraph _graph = null;
+	private NodeGraphBase graphBase = null;
 
-	public NodeLabelDrawer(NodeGraph pNodeGraph) : base(pNodeGraph.width, pNodeGraph.height)
+	public NodeLabelDrawer(NodeGraphBase pNodeGraphBase) : base(pNodeGraphBase.width, pNodeGraphBase.height)
 	{
 		Console.WriteLine("\n-----------------------------------------------------------------------------");
 		Console.WriteLine("NodeLabelDrawer created.");
 		Console.WriteLine("* L key to toggle node label display.");
 		Console.WriteLine("-----------------------------------------------------------------------------");
 
-		_labelFont = new Font(SystemFonts.DefaultFont.FontFamily, pNodeGraph.nodeSize, FontStyle.Bold);
-		_graph = pNodeGraph;
+		_labelFont = new Font(SystemFonts.DefaultFont.FontFamily, pNodeGraphBase.nodeSize, FontStyle.Bold);
+		graphBase = pNodeGraphBase;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ class NodeLabelDrawer : Canvas
 
 	protected virtual void drawLabels()
 	{
-		foreach (Node node in _graph.nodes) drawNode(node);
+		foreach (Node node in graphBase.nodes) drawNode(node);
 	}
 
 	protected virtual void drawNode(Node pNode)

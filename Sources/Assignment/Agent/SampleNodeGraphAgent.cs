@@ -1,26 +1,26 @@
 ﻿using GXPEngine;
 
 /**
- * Very simple example of a nodegraphagent that walks directly to the node you clicked on,
+ * Very simple example of a node graph agent that walks directly to the node you clicked on,
  * ignoring walls, connections etc.
  */
-class SampleNodeGraphAgent : NodeGraphAgent
+class SampleNodeGraphAgent : NodeGraphAgentBase
 {
 	//Current target to move towards
 	private Node _target = null;
 
-	public SampleNodeGraphAgent(NodeGraph pNodeGraph) : base(pNodeGraph)
+	public SampleNodeGraphAgent(NodeGraphBase nodeGraph) : base(nodeGraph)
 	{
 		SetOrigin(width / 2, height / 2);
 
 		//position ourselves on a random node
-		if (pNodeGraph.nodes.Count > 0)
+		if (nodeGraph.nodes.Count > 0)
 		{
-			jumpToNode(pNodeGraph.nodes[Utils.Random(0, pNodeGraph.nodes.Count)]);
+			jumpToNode(nodeGraph.nodes[Utils.Random(0, nodeGraph.nodes.Count)]);
 		}
 
-		//listen to nodeclicks
-		pNodeGraph.OnNodeLeftClicked += onNodeClickHandler;
+		//listen to node clicks
+		nodeGraph.OnNodeLeftClicked += onNodeClickHandler;
 	}
 
 	protected virtual void onNodeClickHandler(Node pNode)

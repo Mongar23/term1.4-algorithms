@@ -6,9 +6,9 @@ using System.Collections.Generic;
  * An example of a PathFinder implementation which completes the process by rolling a die 
  * and just returning the straight-as-the-crow-flies path if you roll a 6 ;). 
  */
-class SamplePathFinder : PathFinder	{
+class SamplePathFinder : PathFinderBase	{
 
-	public SamplePathFinder(NodeGraph pGraph) : base(pGraph) {}
+	public SamplePathFinder(NodeGraphBase pGraphBase) : base(pGraphBase) {}
 
 	protected override List<Node> generate(Node pFrom, Node pTo)
 	{

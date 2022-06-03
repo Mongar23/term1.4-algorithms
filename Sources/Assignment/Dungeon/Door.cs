@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 /**
  * This class represents (the data for) a Door, at this moment only a position in the dungeon.
@@ -6,28 +7,36 @@
  */
 public class Door
 {
-	public Point location { get; private set; }
+	public Point location { get; }
+
+	public Room RoomA
+	{
+		get => roomA;
+		set => roomA = value ?? throw new ArgumentException("Cannot set RoomA to null");
+	}
+
+	public Room RoomB
+	{
+		get => roomB;
+		set => roomB = value ?? throw new ArgumentException("Cannot set RoomA to null");
+	}
 
 	//Keeping tracks of the Rooms that this door connects to,
 	//might make your life easier during some of the assignments
-	public Room roomA { get; private set; }
-	public Room roomB { get; private set; }
+	private Room roomA;
+	private Room roomB;
 
-	//You can also keep track of additional information such as whether the door connects horizontally/vertically
-	//Again, whether you need flags like this depends on how you implement the algorithm, maybe you need other flags
-	public bool horizontal = false;
+	public Door(Point pLocation) => location = pLocation;
 
-	public Door(Point pLocation) { location = pLocation; }
+	public Door(int x, int y) => location = new Point(x, y);
 
-	public Door(int x, int y) { location = new Point(x, y); }
-
-	public void Move(Point point) { location = point; }
-
-	public void SetRooms(Room a, Room b)
+	public override string ToString()
 	{
-		roomA = a;
-		roomB = b;
-	}
+		const int maxDoorInfoLength = 15;
+		string doorInfo = $"door({location.X},{location.Y})";
+		int whiteSpaceSize = maxDoorInfoLength - doorInfo.Length;
+		string whiteSpace = new(' ', whiteSpaceSize);
 
-	public override string ToString() { return $"door({location.X},{location.Y})\t\tconnecting rooms {roomA}\t{roomB}"; }
+		return $"{doorInfo} {whiteSpace} connecting rooms {roomA}\t{roomB}";
+	}
 }

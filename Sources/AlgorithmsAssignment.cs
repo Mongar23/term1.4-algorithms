@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using GXPEngine;
 using GXPEngine.OpenGL;
@@ -15,16 +16,19 @@ using Mathias;
  */
 class AlgorithmsAssignment : Game
 {
+	public static Grid Grid { get; private set; }
+	public static Random Random { get; private set; }
+
 	//Required for assignment 1
-	DungeonBase _dungeonBase = null;
+	DungeonBase _dungeon = null;
 
 	//Required for assignment 2
-	NodeGraph _graph = null;
+	NodeGraphBase _graph = null;
 	TiledView _tiledView = null;
-	NodeGraphAgent _agent = null;
+	NodeGraphAgentBase _agent = null;
 
 	//Required for assignment 3
-	PathFinder _pathFinder = null;
+	PathFinderBase _pathFinder = null;
 
 	//common settings
 	private const int SCALE = 20;				//TODO: experiment with changing this
@@ -34,43 +38,25 @@ class AlgorithmsAssignment : Game
 	{
 		GL.ClearColor(1, 1, 1, 1);
 		GL.glfwSetWindowTitle("Algorithms Game");
+		Random = new Random(1);
 		
 		Grid grid = new (width, height, SCALE);
+		Grid = grid;
 		Size size = new (width / SCALE, height / SCALE);
 
-		_dungeonBase = new Dungeon(size);
-		if (_dungeonBase != null)
+		_dungeon = new Dungeon(size);
+		if (_dungeon != null)
 		{
-			_dungeonBase.scale = SCALE;
-			_dungeonBase.Generate(MIN_ROOM_SIZE);
+			_dungeon.scale = SCALE;
+			_dungeon.Generate(MIN_ROOM_SIZE);
 		}
 
-		/////////////////////////////////////////////////////////////////////////////////////////
-		/// ASSIGNMENT 2 : GRAPHS, AGENTS & TILES
-		///							
-		/// SKIP THIS BLOCK UNTIL YOU'VE FINISHED ASSIGNMENT 1 AND ASKED FOR TEACHER FEEDBACK !
+		
 
-		/////////////////////////////////////////////////////////////
-		//Assignment 2.1 Sufficient (Mandatory) High Level NodeGraph
-		//
-		//TODO: Study assignment 2.1 on blackboard
-		//TODO: Study the NodeGraph and Node classes
-		//TODO: Study the SampleDungeonNodeGraph class and try it out below
-		//TODO: Comment out the SampleDungeonNodeGraph again, implement a HighLevelDungeonNodeGraph class and uncomment it below
+		_graph = new NodeGraph(_dungeon);
+		_graph?.Generate();
 
-		//_graph = new SampleDungeonNodeGraph(_dungeon);
-		//_graph = new HighLevelDungeonNodeGraph(_dungeon);
-		//_graph = new LowLevelDungeonNodeGraph(_dungeon);
-
-		if (_graph != null) _graph.Generate();
-
-		/////////////////////////////////////////////////////////////
-		//Assignment 2.1 Sufficient (Mandatory) OnGraphWayPointAgent
-		//
-		//TODO: Study the NodeGraphAgent class
-		//TODO: Study the SampleNodeGraphAgent class and try it out below
-		//TODO: Comment out the SampleNodeGraphAgent again, implement an OnGraphWayPointAgent class and uncomment it below
-
+		_agent = new NodeGraphAgent(_graph);
 		//_agent = new SampleNodeGraphAgent(_graph);
 		//_agent = new OnGraphWayPointAgent(_graph);
 
@@ -137,7 +123,7 @@ class AlgorithmsAssignment : Game
 		/// LOOK BUT DON'T TOUCH :)
 
 		if (grid != null) AddChild(grid);
-		if (_dungeonBase != null) AddChild(_dungeonBase);
+		if (_dungeon != null) AddChild(_dungeon);
 		if (_graph != null) AddChild(_graph);
 		if (_tiledView != null) AddChild(_tiledView);
 		if (_pathFinder != null) AddChild(_pathFinder);				//pathfinder on top of that
