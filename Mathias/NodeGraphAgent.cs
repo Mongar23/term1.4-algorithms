@@ -41,7 +41,9 @@ namespace Mathias
 
 		private void OnNodeClicked(Node node)
 		{
-			if (!currentNode.connections.Contains(node) && !nodesToVisit.Any(n => n.connections.Contains(node))) { return; }
+			if (targetNode == null && !currentNode.connections.Contains(node)) { return; }
+
+			if (nodesToVisit.Count > 0 && !nodesToVisit.Last().connections.Contains(node)) { return; }
 
 			if (nodesToVisit.Count < 1)
 			{
@@ -49,7 +51,8 @@ namespace Mathias
 				return;
 			}
 
-			if(nodesToVisit.Last() == node) {return;}
+			if (nodesToVisit.Last() == node) { return; }
+
 			nodesToVisit.Add(node);
 		}
 	}
