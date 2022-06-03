@@ -28,7 +28,7 @@ class AlgorithmsAssignment : Game
 	NodeGraphAgentBase _agent = null;
 
 	//Required for assignment 3
-	PathFinder _pathFinder = null;
+	PathFinderBase _pathFinder = null;
 
 	//common settings
 	private const int SCALE = 20;				//TODO: experiment with changing this

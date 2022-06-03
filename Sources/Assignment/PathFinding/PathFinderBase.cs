@@ -12,7 +12,7 @@ using System.Drawing;
  * TODO:
  * - create a subclass for this class and override the generate method (See SamplePathFinder for an example)
  */
-abstract class PathFinder : Canvas
+public abstract class PathFinderBase : Canvas
 {
 	protected Node _startNode;							
 	protected Node _endNode;
@@ -29,7 +29,7 @@ abstract class PathFinder : Canvas
 	private Brush _endNodeColor = Brushes.Red;
 	private Brush _pathNodeColor = Brushes.Yellow;
 
-	public PathFinder (NodeGraphBase pGraphBase) : base (pGraphBase.width, pGraphBase.height)
+	public PathFinderBase (NodeGraphBase pGraphBase) : base (pGraphBase.width, pGraphBase.height)
 	{
 		nodeGraphBase = pGraphBase;
 		nodeGraphBase.OnNodeShiftLeftClicked += (node) => { _startNode = node; draw(); };

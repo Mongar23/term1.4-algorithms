@@ -73,6 +73,7 @@
     <Compile Include="GXPEngine\Utils\Utils.cs" />
     <Compile Include="Mathias\Dungeon.cs" />
     <Compile Include="Mathias\NodeGraph.cs" />
+    <Compile Include="Mathias\PathFinder.cs" />
     <Compile Include="Mathias\RoomPair.cs" />
     <Compile Include="Mathias\Utilities\Debug.cs" />
     <Compile Include="Mathias\Utilities\SizeExtensions.cs" />
@@ -93,7 +94,7 @@
     <Compile Include="Sources\Assignment\Tiles\TileType.cs" />
     <Compile Include="Sources\Assignment\Tiles\TiledView.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Sources\Assignment\PathFinding\PathFinder.cs" />
+    <Compile Include="Sources\Assignment\PathFinding\PathFinderBase.cs" />
     <Compile Include="Sources\Util\Grid.cs" />
     <Compile Include="Sources\Util\NodeLabelDrawer.cs" />
     <Compile Include="Sources\Util\RectangleExtensions.cs" />

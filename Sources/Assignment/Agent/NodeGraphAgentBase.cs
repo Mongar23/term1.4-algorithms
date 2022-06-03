@@ -10,7 +10,7 @@ using System.Diagnostics;
  */
 public abstract class NodeGraphAgentBase : AnimationSprite
 {
-	protected const int REGULAR_SPEED = 1;
+	protected const float REGULAR_SPEED = 0.5f;
 	protected const int FAST_TRAVEL_SPEED = 10;
 	protected const int SPEED_UP_KEY = Key.LEFT_CTRL;
 	
