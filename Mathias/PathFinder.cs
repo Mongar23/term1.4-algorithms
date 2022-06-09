@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mathias.Utilities;
 
 namespace Mathias
 {
@@ -12,7 +13,12 @@ namespace Mathias
 
 		protected override List<Node> generate(Node from, Node to)
 		{
-			return FindPath(from, to, new List<Node> { from }) ? path : null;
+			if(FindPath(from, to, new List<Node> { from }))
+			{
+				Debug.Log($"Path found of {path.Count} nodes");
+			}
+			//return FindPath(from, to, new List<Node> { from }) ? path : null;
+			return null;
 		}
 
 		private bool FindPath(Node checkingNode, Node endNode, List<Node> parentPath)

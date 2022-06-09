@@ -3,6 +3,7 @@ using System.Drawing;
 using GXPEngine;
 using GXPEngine.OpenGL;
 using Mathias;
+using Mathias.Agents;
 using Mathias.Utilities;
 
 /**
@@ -32,8 +33,8 @@ class AlgorithmsAssignment : Game
 	PathFinderBase _pathFinder = null;
 
 	//common settings
-	private const int SCALE = 20;				//TODO: experiment with changing this
-	private const int MIN_ROOM_SIZE = 5;		//TODO: use this setting in your dungeon generator
+	private const int SCALE = 20;
+	private const int MIN_ROOM_SIZE = 5;
 
 	public AlgorithmsAssignment() : base(800, 600, false, true, -1, -1, false)
 	{
@@ -52,53 +53,21 @@ class AlgorithmsAssignment : Game
 			_dungeon.Generate(MIN_ROOM_SIZE);
 		}
 
-		
-
 		_graph = new NodeGraph(_dungeon);
 		_graph?.Generate();
 
 		_agent = new NodeGraphAgent(_graph, GradeType.Good);
 		
-		//_tiledView = new SampleTiledView(_dungeon, TileType.GROUND);
 		_tiledView = new TiledDungeonView(_dungeon, TileType.GROUND); 
 		if (_tiledView != null) _tiledView.Generate();
 
-		////////////////////////////////////////////////////////////
-		//Assignment 2.2 Good (Optional) RandomWayPointAgent
-		//
-		//TODO: Comment out the OnGraphWayPointAgent above, implement a RandomWayPointAgent class and uncomment it below
-
-		//_agent = new RandomWayPointAgent(_graph);	
-
-		//////////////////////////////////////////////////////////////
-		//Assignment 2.3 Excellent (Optional) LowLevelDungeonNodeGraph
-		//
-		//TODO: Comment out the HighLevelDungeonNodeGraph above, and implement the LowLevelDungeonNodeGraph 
-
-		/////////////////////////////////////////////////////////////////////////////////////////
-		/// ASSIGNMENT 3 : PathFinding and PathFindingAgents
-		///							
-		/// SKIP THIS BLOCK UNTIL YOU'VE FINISHED ASSIGNMENT 2 AND ASKED FOR TEACHER FEEDBACK !
-
-		//////////////////////////////////////////////////////////////////////////
-		//Assignment 3.1 Sufficient (Mandatory) - Recursive Pathfinding
-		//
-		//TODO: Study assignment 3.1 on blackboard
-		//TODO: Study the PathFinder class
-		//TODO: Study the SamplePathFinder class and try it out
-		//TODO: Comment out the SamplePathFinder, implement a RecursivePathFinder and uncomment it below
-
 		//_pathFinder = new SamplePathFinder(_graph);
-		//_pathFinder = new RecursivePathFinder(_graph);
+		_pathFinder = new PathFinder(_graph);
 
-		//////////////////////////////////////////////////////////////////////////
-		//Assignment 3.1 Sufficient (Mandatory) - BreadthFirst Pathfinding
-		//
-		//TODO: Comment out the RecursivePathFinder above, implement a BreadthFirstPathFinder and uncomment it below
-		//_pathFinder = new BreadthFirstPathFinder(_graph);
+		
 
 		//TODO: Implement a PathFindingAgent that uses one of your pathfinder implementations (should work with any pathfinder implementation)
-		//_agent = new PathFindingAgent(_graph, _pathFinder);
+		_agent = new PathFindingAgent(_graph, _pathFinder);
 
 		/////////////////////////////////////////////////
 		//Assignment 3.2 Good & 3.3 Excellent (Optional)

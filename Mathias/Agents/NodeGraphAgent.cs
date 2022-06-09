@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Mathias.Utilities;
 
-namespace Mathias
+namespace Mathias.Agents
 {
 	public class NodeGraphAgent : NodeGraphAgentBase
 	{
 		private readonly Action innerUpdate;
 		private readonly List<Node> nodesToVisit = new();
+		private readonly PathFinder pathFinder = null;
 
 		private Node targetNode;
 		private Node currentNode;
@@ -21,7 +22,8 @@ namespace Mathias
 
 			if(nodeGraph.nodes.Count < 0) { throw new ArgumentException("The passed in node graph has no nodes"); }
 
-			currentNode = nodeGraph.nodes[28];
+			int randomNode = AlgorithmsAssignment.Random.Next(0, nodeGraph.nodes.Count);
+			currentNode = nodeGraph.nodes[randomNode];
 			jumpToNode(currentNode);
 
 			switch (gradeType)
@@ -44,6 +46,7 @@ namespace Mathias
 		protected override void Update() { innerUpdate.Invoke(); }
 
 		#region Sufficient
+
 		private void OnNodeClickedSufficient(Node node)
 		{
 			if(targetNode == null && !currentNode.connections.Contains(node)) { return; } // Standing still
@@ -77,9 +80,11 @@ namespace Mathias
 
 			targetNode = nodesToVisit.Count > 0 ? nodesToVisit[0] : null;
 		}
+
 		#endregion
 
 		#region Good
+
 		private void OnNodeClickedGood(Node node)
 		{
 			if(targetNode != null) { return; } // Orc is walking towards a target.
@@ -94,7 +99,7 @@ namespace Mathias
 			endNode = node;
 			int r = AlgorithmsAssignment.Random.Next(0, currentNode.connections.Count);
 			targetNode = currentNode.connections[r];
-			}
+		}
 
 		private void UpdateGood()
 		{
@@ -123,6 +128,7 @@ namespace Mathias
 				targetNode = currentNode.connections[r];
 			} while (targetNode == lastVisitedNode); //Select random node which is not the last visited node.
 		}
+
 		#endregion
 	}
 }
