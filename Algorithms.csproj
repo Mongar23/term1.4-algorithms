@@ -92,6 +92,7 @@
     <Compile Include="Mathias\RoomPair.cs" />
     <Compile Include="Mathias\TiledDungeonView.cs" />
     <Compile Include="Mathias\Utilities\Debug.cs" />
+    <Compile Include="Mathias\Utilities\GradeType.cs" />
     <Compile Include="Mathias\Utilities\SizeExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mathias\NodeGraphAgent.cs" />

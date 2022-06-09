@@ -3,6 +3,7 @@ using System.Drawing;
 using GXPEngine;
 using GXPEngine.OpenGL;
 using Mathias;
+using Mathias.Utilities;
 
 /**
  * This is the main 'game' for the Algorithms Assignment that accompanies the Algorithms course.
@@ -56,7 +57,7 @@ class AlgorithmsAssignment : Game
 		_graph = new NodeGraph(_dungeon);
 		_graph?.Generate();
 
-		_agent = new NodeGraphAgent(_graph);
+		_agent = new NodeGraphAgent(_graph, GradeType.Good);
 		
 		//_tiledView = new SampleTiledView(_dungeon, TileType.GROUND);
 		_tiledView = new TiledDungeonView(_dungeon, TileType.GROUND); 
