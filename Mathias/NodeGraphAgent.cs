@@ -43,6 +43,7 @@ namespace Mathias
 
 		protected override void Update() { innerUpdate.Invoke(); }
 
+		#region Sufficient
 		private void OnNodeClickedSufficient(Node node)
 		{
 			if(targetNode == null && !currentNode.connections.Contains(node)) { return; } // Standing still
@@ -76,7 +77,9 @@ namespace Mathias
 
 			targetNode = nodesToVisit.Count > 0 ? nodesToVisit[0] : null;
 		}
+		#endregion
 
+		#region Good
 		private void OnNodeClickedGood(Node node)
 		{
 			if(targetNode != null) { return; } // Orc is walking towards a target.
@@ -120,5 +123,6 @@ namespace Mathias
 				targetNode = currentNode.connections[r];
 			} while (targetNode == lastVisitedNode); //Select random node which is not the last visited node.
 		}
+		#endregion
 	}
 }
