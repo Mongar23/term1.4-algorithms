@@ -24,7 +24,7 @@ class AlgorithmsAssignment : Game
 
 	//Required for assignment 2
 	NodeGraphBase _graph = null;
-	TiledView _tiledView = null;
+	TiledViewBase _tiledView = null;
 	NodeGraphAgentBase _agent = null;
 
 	//Required for assignment 3
@@ -57,19 +57,9 @@ class AlgorithmsAssignment : Game
 		_graph?.Generate();
 
 		_agent = new NodeGraphAgent(_graph);
-		//_agent = new SampleNodeGraphAgent(_graph);
-		//_agent = new OnGraphWayPointAgent(_graph);
-
-		////////////////////////////////////////////////////////////
-		//Assignment 2.2 Good (Optional) TiledView
-		//
-		//TODO: Study assignment 2.2 on blackboard
-		//TODO: Study the TiledView and TileType classes
-		//TODO: Study the SampleTileView class and try it out below
-		//TODO: Comment out the SampleTiledView again, implement the TiledDungeonView and uncomment it below
-
+		
 		//_tiledView = new SampleTiledView(_dungeon, TileType.GROUND);
-		//_tiledView = new TiledDungeonView(_dungeon, TileType.GROUND); 
+		_tiledView = new TiledDungeonView(_dungeon, TileType.GROUND); 
 		if (_tiledView != null) _tiledView.Generate();
 
 		////////////////////////////////////////////////////////////
@@ -124,8 +114,8 @@ class AlgorithmsAssignment : Game
 
 		if (grid != null) AddChild(grid);
 		if (_dungeon != null) AddChild(_dungeon);
-		if (_graph != null) AddChild(_graph);
 		if (_tiledView != null) AddChild(_tiledView);
+		if (_graph != null) AddChild(_graph);
 		if (_pathFinder != null) AddChild(_pathFinder);				//pathfinder on top of that
 		if (_graph != null) AddChild(new NodeLabelDrawer(_graph));	//node label display on top of that
 		if (_agent != null) AddChild(_agent);                       //and last but not least the agent itself
