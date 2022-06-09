@@ -9,7 +9,7 @@ using System.Diagnostics;
  * 
  * Subclass this class and override the generate method (note the lower case).
  */
-abstract class TiledView : GameObject
+public abstract class TiledViewBase : GameObject
 {
 	//the dimensions of the tileview
 	public int columns { get; private set; }
@@ -21,7 +21,7 @@ abstract class TiledView : GameObject
 	//single sprite, used for rendering all tiles
 	private AnimationSprite _tileSet;
 
-	public TiledView(int pColumns, int pRows, int pTileSize, TileType pDefaultTileType) {
+	public TiledViewBase(int pColumns, int pRows, int pTileSize, TileType pDefaultTileType) {
 		Debug.Assert(pColumns > 0, "Invalid amount of columns passed in: " + pColumns);
 		Debug.Assert(pRows > 0, "Invalid amount of rows passed in: " + pRows);
 		Debug.Assert(pDefaultTileType != null, "Invalid default tile type passed in:" + pDefaultTileType);

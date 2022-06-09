@@ -2,7 +2,7 @@
  * Describes a certain tiletype and whether it's walkable or not.
  * Note how we maintain controls over the possible TileType's in this class (constructor is private)
  */
-class TileType
+public class TileType
 {
 	//all possible tile types based on this class' properties
 	public static readonly TileType WALL = new TileType(false);		//wall, not walkable

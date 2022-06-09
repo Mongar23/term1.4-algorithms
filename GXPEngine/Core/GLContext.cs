@@ -151,7 +151,7 @@ namespace GXPEngine.Core {
 		public void Close() {
 			GL.glfwCloseWindow();
 			GL.glfwTerminate();
-			System.Environment.Exit(0);
+			//System.Environment.Exit(0); // Don't close the console on exit. 
 		}
 		
 		//------------------------------------------------------------------------------------------------------------------------

@@ -13,6 +13,21 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -75,6 +90,7 @@
     <Compile Include="Mathias\NodeGraph.cs" />
     <Compile Include="Mathias\PathFinder.cs" />
     <Compile Include="Mathias\RoomPair.cs" />
+    <Compile Include="Mathias\TiledDungeonView.cs" />
     <Compile Include="Mathias\Utilities\Debug.cs" />
     <Compile Include="Mathias\Utilities\SizeExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -92,7 +108,7 @@
     <Compile Include="Sources\Assignment\NodeGraph\Node.cs" />
     <Compile Include="Sources\Assignment\NodeGraph\NodeGraphBase.cs" />
     <Compile Include="Sources\Assignment\Tiles\TileType.cs" />
-    <Compile Include="Sources\Assignment\Tiles\TiledView.cs" />
+    <Compile Include="Sources\Assignment\Tiles\TiledViewBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Sources\Assignment\PathFinding\PathFinderBase.cs" />
     <Compile Include="Sources\Util\Grid.cs" />
@@ -108,7 +124,18 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="sources\Solution\readme.txt" />
   </ItemGroup>

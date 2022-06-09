@@ -3,7 +3,7 @@
 /**
  * This is an example subclass of the TiledView that just generates random tiles.
  */
-class SampleTiledView : TiledView
+class SampleTiledView : TiledViewBase
 {
 	/**
 	 * This constructor takes a dungeon but doesn't do anything with it, it is just an example of how

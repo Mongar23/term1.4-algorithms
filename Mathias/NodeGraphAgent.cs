@@ -41,16 +41,16 @@ namespace Mathias
 
 		private void OnNodeClicked(Node node)
 		{
-			if (targetNode == null && !currentNode.connections.Contains(node)) { return; }
+			if (targetNode == null && !currentNode.connections.Contains(node)) { return; } // Standing still
 
-			if (nodesToVisit.Count > 0 && !nodesToVisit.Last().connections.Contains(node)) { return; }
-
-			if (nodesToVisit.Count < 1)
+			if (nodesToVisit.Count == 0)
 			{
 				nodesToVisit.Add(node);
 				return;
 			}
 
+			if (nodesToVisit.Count > 0 && !nodesToVisit.Last().connections.Contains(node)) { return; } // Walking path
+			
 			if (nodesToVisit.Last() == node) { return; }
 
 			nodesToVisit.Add(node);

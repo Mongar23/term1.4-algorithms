@@ -38,22 +38,6 @@ namespace Mathias
 			foreach (Room room in rooms) { drawRoom(room, wallColor, new SolidBrush(room.Color)); }
 		}
 
-		protected override void draw()
-		{
-			base.draw();
-
-			if (!drawBlacklist) { return; }
-
-			foreach (Point blackListedPoint in blackListedPoints)
-			{
-				graphics.DrawRectangle(new Pen(Color.FromArgb((int)(255 * 0.5f), Color.DarkRed)),
-					blackListedPoint.X,
-					blackListedPoint.Y,
-					0.5f,
-					0.5f);
-			}
-		}
-
 		/// <summary>
 		///     Will split main room up until all rooms are to small to split.
 		/// </summary>
