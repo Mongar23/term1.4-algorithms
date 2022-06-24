@@ -52,8 +52,6 @@ class AlgorithmsAssignment : Game
 			_dungeon.Generate(MIN_ROOM_SIZE);
 		}
 
-		
-
 		_graph = new NodeGraph(_dungeon);
 		_graph?.Generate();
 
@@ -115,7 +113,7 @@ class AlgorithmsAssignment : Game
 
 		if (grid != null) AddChild(grid);
 		if (_dungeon != null) AddChild(_dungeon);
-		if (_tiledView != null) AddChild(_tiledView);
+		//if (_tiledView != null) AddChild(_tiledView);
 		if (_graph != null) AddChild(_graph);
 		if (_pathFinder != null) AddChild(_pathFinder);				//pathfinder on top of that
 		if (_graph != null) AddChild(new NodeLabelDrawer(_graph));	//node label display on top of that

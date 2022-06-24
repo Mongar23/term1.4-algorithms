@@ -12,7 +12,7 @@ public class Room
 	public Color Color { get; set; }
 	public Point Position { get; }
 	public Size Size { get; }
-	public List<Door> doors = new ();
+	public List<Door> doors;
 	public Rectangle area;
 
 	public Room(Rectangle pArea)
