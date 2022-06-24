@@ -21,7 +21,8 @@ namespace Mathias
 
 			if(nodeGraph.nodes.Count < 0) { throw new ArgumentException("The passed in node graph has no nodes"); }
 
-			currentNode = nodeGraph.nodes[28];
+			int randomNodeNumber = AlgorithmsAssignment.Random.Next(0, nodeGraph.nodes.Count);
+			currentNode = nodeGraph.nodes[randomNodeNumber];
 			jumpToNode(currentNode);
 
 			switch (gradeType)

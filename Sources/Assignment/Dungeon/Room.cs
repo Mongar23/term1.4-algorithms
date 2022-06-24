@@ -12,7 +12,7 @@ public class Room
 	public Color Color { get; set; }
 	public Point Position { get; }
 	public Size Size { get; }
-	public List<Door> doors;
+	public List<Door> doors = new ();
 	public Rectangle area;
 
 	public Room(Rectangle pArea)
@@ -72,7 +72,7 @@ public class Room
 
 	public override int GetHashCode() => base.GetHashCode();
 
-	private void SetDoors(IEnumerable<Door> doorsToCheck)
+	public void SetDoors(IEnumerable<Door> doorsToCheck)
 	{
 		List<Door> doors = new();
 

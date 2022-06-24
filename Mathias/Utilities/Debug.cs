@@ -54,12 +54,12 @@ namespace Mathias.Utilities
 		/// </summary>
 		/// <param name="message">The text that has to be displayed in the console</param>
 		/// <param name="elapsedTime">The time it took to initialize the object.</param>
-		public static void Initialized(string message, double elapsedTime)
+		public static void Initialized(object initializedObject, double elapsedTime)
 		{
 			Console.ForegroundColor = ConsoleColor.Blue;
 			Console.Write("[INITIALIZED] ");
 			Console.ResetColor();
-			Console.WriteLine($"{message} in {elapsedTime}ms...");
+			Console.WriteLine($"{initializedObject.GetType().Name} in {elapsedTime}ms...");
 		}
 
 		/// <summary>

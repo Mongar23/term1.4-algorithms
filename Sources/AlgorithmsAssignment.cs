@@ -39,13 +39,13 @@ class AlgorithmsAssignment : Game
 	{
 		GL.ClearColor(1, 1, 1, 1);
 		GL.glfwSetWindowTitle("Algorithms Game");
-		Random = new Random(1);
+		Random = new Random();
 		
 		Grid grid = new (width, height, SCALE);
 		Grid = grid;
 		Size size = new (width / SCALE, height / SCALE);
 
-		_dungeon = new Dungeon(size);
+		_dungeon = new Dungeon(size, GradeType.Good);
 		if (_dungeon != null)
 		{
 			_dungeon.scale = SCALE;
@@ -58,7 +58,7 @@ class AlgorithmsAssignment : Game
 		_graph?.Generate();
 
 		_agent = new NodeGraphAgent(_graph, GradeType.Good);
-		
+
 		//_tiledView = new SampleTiledView(_dungeon, TileType.GROUND);
 		_tiledView = new TiledDungeonView(_dungeon, TileType.GROUND); 
 		if (_tiledView != null) _tiledView.Generate();

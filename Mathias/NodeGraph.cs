@@ -34,7 +34,7 @@ namespace Mathias
 				{
 					Node doorNode;
 
-					if(!nodedDoors.ContainsKey(door))
+					if (!nodedDoors.ContainsKey(door))
 					{
 						doorNode = new Node(GetPointCenter(door.location));
 
@@ -45,13 +45,13 @@ namespace Mathias
 
 					AddConnection(roomNode, doorNode);
 
-					if(!nodedRooms.Contains(door.RoomA))
+					if (!nodedRooms.Contains(door.RoomA))
 					{
 						roomsToNode.Enqueue(door.RoomA);
 						nodedRooms.Add(door.RoomA);
 					}
 
-					if(nodedRooms.Contains(door.RoomB)) { continue; }
+					if (nodedRooms.Contains(door.RoomB)) { continue; }
 
 					roomsToNode.Enqueue(door.RoomB);
 					nodedRooms.Add(door.RoomB);
