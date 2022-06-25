@@ -18,6 +18,9 @@ namespace Mathias
 
 		public NodeGraphAgent(NodeGraphBase nodeGraph, GradeType gradeType) : base(nodeGraph)
 		{
+			System.Diagnostics.Stopwatch stopwatch = new ();
+			stopwatch.Start ();
+
 			SetOrigin(width * 0.5f, height * 0.5f);
 
 			if (nodeGraph.nodes.Count < 0) { throw new ArgumentException("The passed in node graph has no nodes"); }
@@ -42,6 +45,9 @@ namespace Mathias
 				case GradeType.Excellent: throw new NotImplementedException();
 				default: throw new ArgumentOutOfRangeException(nameof(gradeType), gradeType, null);
 			}
+
+			Debug.Initialized(this, stopwatch.ElapsedMilliseconds);
+			stopwatch.Stop();
 		}
 
 		protected override void Update() { innerUpdate.Invoke(); }
@@ -98,6 +104,13 @@ namespace Mathias
 			}
 
 			endNode = node;
+
+			if (currentNode.connections == null || currentNode.connections.Count == 0)
+			{
+				Debug.LogError($"{currentNode} has no connections!");
+				AlgorithmsAssignment.Instance.Destroy();
+				return;
+			}
 			int randomNodeIndex = AlgorithmsAssignment.Random.Next(0, currentNode.connections.Count);
 			targetNode = currentNode.connections[randomNodeIndex];
 		}
@@ -123,7 +136,7 @@ namespace Mathias
 				return;
 			}
 
-			if(currentNode.connections.Count == 1)
+			if(currentNode.connections.Count == 1) //Has only one direction to go to.
 			{
 				targetNode = currentNode.connections[0];
 				return;

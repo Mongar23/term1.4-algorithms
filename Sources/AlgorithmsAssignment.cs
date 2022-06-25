@@ -23,6 +23,7 @@ internal class AlgorithmsAssignment : Game
 	private const int SCALE = 20;
 	public static Grid Grid { get; private set; }
 	public static Random Random { get; private set; }
+	public static AlgorithmsAssignment Instance { get; private set; }
 
 	//Required for assignment 1
 	private DungeonBase _dungeon;
@@ -37,9 +38,11 @@ internal class AlgorithmsAssignment : Game
 
 	public AlgorithmsAssignment() : base(800, 600, false)
 	{
+		Instance = game as AlgorithmsAssignment;
+
 		GL.ClearColor(1, 1, 1, 1);
 		GL.glfwSetWindowTitle("Algorithms Game");
-		Random = new Random();
+		Random = new Random(1);
 
 		Grid grid = new(width, height, SCALE);
 		Grid = grid;
@@ -58,25 +61,21 @@ internal class AlgorithmsAssignment : Game
 
 		#region part 2
 
-		_graph = new NodeGraph(_dungeon);
+		_graph = new NodeGraph(_dungeon, NodeGraph.Level.Low);
 		_graph?.Generate();
 
 		_agent = new NodeGraphAgent(_graph, GradeType.Good);
-
+		
 		if ((_agent as NodeGraphAgent)?.gradeType == GradeType.Good)
 		{
 			_tiledView = new TiledDungeonView(_dungeon, TileType.GROUND);
 			_tiledView?.Generate();
 		}
+		
+
+		
 
 		#endregion
-
-		////////////////////////////////////////////////////////////
-		//Assignment 2.2 Good (Optional) RandomWayPointAgent
-		//
-		//TODO: Comment out the OnGraphWayPointAgent above, implement a RandomWayPointAgent class and uncomment it below
-
-		//_agent = new RandomWayPointAgent(_graph);	
 
 		//////////////////////////////////////////////////////////////
 		//Assignment 2.3 Excellent (Optional) LowLevelDungeonNodeGraph

@@ -7,6 +7,7 @@ namespace Mathias.Utilities
 	/// <summary>
 	///     A helper class to make logging information to the console easier.
 	/// </summary>
+	//todo: add null checks
 	public static class Debug
 	{
 		/// <summary>
