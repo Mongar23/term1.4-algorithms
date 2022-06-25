@@ -36,8 +36,10 @@ namespace Mathias.Agents
 				return;
 			}
 
+			Debug.Log($"before: {currentNode}, {target}");
 			currentNode = target;
 			target = null;
+			Debug.Log($"after: {currentNode}, {target}");
 		}
 
 		private void OnLeftClicked(Node node)
@@ -45,13 +47,12 @@ namespace Mathias.Agents
 			if(target != null) { return; } // Is walking.
 
 			path = pathFinder.Generate(currentNode, node);
-			if(path == null)
+			if(path == null || path.Count == 0)
 			{
 				Debug.LogWaring("Path could not be found");
 				return;
 			}
 
-			path.RemoveAt(0);
 			target = path[0];
 		}
 	}

@@ -19,9 +19,8 @@ using Mathias.Utilities;
 internal class AlgorithmsAssignment : Game
 {
 	private const int MIN_ROOM_SIZE = 5;
-
-	//common settings
 	private const int SCALE = 20;
+
 	public static Grid Grid { get; private set; }
 	public static Random Random { get; private set; }
 	public static AlgorithmsAssignment Instance { get; private set; }
@@ -37,9 +36,7 @@ internal class AlgorithmsAssignment : Game
 	private PathFinderBase _pathFinder = null;
 	private TiledViewBase _tiledView;
 
-	//common settings
-	private const int SCALE = 20;
-	private const int MIN_ROOM_SIZE = 5;
+
 	public AlgorithmsAssignment() : base(800, 600, false)
 	{
 		Instance = game as AlgorithmsAssignment;
@@ -65,7 +62,7 @@ internal class AlgorithmsAssignment : Game
 
 		#region part 2
 
-		_graph = new NodeGraph(_dungeon, NodeGraph.Level.Low);
+		_graph = new NodeGraph(_dungeon, NodeGraph.Level.High);
 		_graph?.Generate();
 
 		_agent = new NodeGraphAgent(_graph, GradeType.Good);
@@ -75,36 +72,13 @@ internal class AlgorithmsAssignment : Game
 			_tiledView = new TiledDungeonView(_dungeon, TileType.GROUND);
 			_tiledView?.Generate();
 		}
-		
-
-		
 
 		#endregion
 
-		//////////////////////////////////////////////////////////////
-		//Assignment 2.3 Excellent (Optional) LowLevelDungeonNodeGraph
-		//
-		//TODO: Comment out the HighLevelDungeonNodeGraph above, and implement the LowLevelDungeonNodeGraph 
+		#region part 3
 
-		/////////////////////////////////////////////////////////////////////////////////////////
-		/// ASSIGNMENT 3 : PathFinding and PathFindingAgents
-		///							
-		/// SKIP THIS BLOCK UNTIL YOU'VE FINISHED ASSIGNMENT 2 AND ASKED FOR TEACHER FEEDBACK !
+		_pathFinder = new PathFinder(_graph, PathFinder.SearchType.Recursive);
 
-		//////////////////////////////////////////////////////////////////////////
-		//Assignment 3.1 Sufficient (Mandatory) - Recursive Pathfinding
-		//
-		//TODO: Study assignment 3.1 on blackboard
-		//TODO: Study the PathFinder class
-		//TODO: Study the SamplePathFinder class and try it out
-		//TODO: Comment out the SamplePathFinder, implement a RecursivePathFinder and uncomment it below
-
-		//_pathFinder = new SamplePathFinder(_graph);
-		_pathFinder = new PathFinder(_graph);
-
-		
-
-		//TODO: Implement a PathFindingAgent that uses one of your pathfinder implementations (should work with any pathfinder implementation)
 		_agent = new PathFindingAgent(_graph, _pathFinder);
 
 		/////////////////////////////////////////////////
@@ -119,6 +93,10 @@ internal class AlgorithmsAssignment : Game
 		//------------------------------------------------------------------------------------------
 		/// REQUIRED BLOCK OF CODE TO ADD ALL OBJECTS YOU CREATED TO THE SCREEN IN THE CORRECT ORDER
 		/// LOOK BUT DON'T TOUCH :)
+
+		#endregion
+
+
 
 		if (grid != null) { AddChild(grid); }
 
