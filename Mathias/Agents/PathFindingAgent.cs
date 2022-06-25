@@ -35,11 +35,9 @@ namespace Mathias.Agents
 				target = path[0];
 				return;
 			}
-
-			Debug.Log($"before: {currentNode}, {target}");
+			
 			currentNode = target;
 			target = null;
-			Debug.Log($"after: {currentNode}, {target}");
 		}
 
 		private void OnLeftClicked(Node node)

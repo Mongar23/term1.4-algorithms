@@ -49,8 +49,6 @@ public abstract class PathFinderBase : Canvas
 
 	public List<Node> Generate(Node pFrom, Node pTo)
 	{
-		System.Console.WriteLine(this.GetType().Name + ".Generate: Generating path...");
-
 		_lastCalculatedPath = null;
 		_startNode = pFrom;
 		_endNode = pTo;
@@ -66,7 +64,6 @@ public abstract class PathFinderBase : Canvas
 
 		draw();
 
-		System.Console.WriteLine(this.GetType().Name + ".Generate: Path generated.");
 		return _lastCalculatedPath;
 	}
 

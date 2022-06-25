@@ -11,7 +11,7 @@ namespace Mathias
 		public enum SearchType
 		{
 			Recursive,
-			Iterative
+			BreadthFirstSearch
 		}
 
 		private readonly SearchType searchType;
@@ -37,16 +37,15 @@ namespace Mathias
 					FindPathRecursive(from, to, new List<Node>());
 					break;
 
-				case SearchType.Iterative:
+				case SearchType.BreadthFirstSearch:
 					List<Node> nodes = FindPathIterative(from, to);
 					path = nodes;
 					break;
 
 				default: throw new ArgumentOutOfRangeException();
 			}
-
-			Debug.Log($"Path found of {path.Count} nodes");
-			Debug.Initialized(this, stopwatch.ElapsedMilliseconds);
+			
+			Debug.Initialized($"Generated path of {path.Count}", stopwatch.ElapsedMilliseconds);
 			stopwatch.Stop();
 			return path;
 		}
@@ -96,18 +95,12 @@ namespace Mathias
 
 					endList.Add(from);
 					endList.Reverse();
-					foreach (Node n in endList) { Console.WriteLine(n); }
-
 					return endList;
 				}
-				
-				foreach (Node connectedNode in node.connections)
-				{
-					if(childParentSet.ContainsKey(connectedNode))
-					{
-						continue;
-					}
 
+				IEnumerable<Node> connectedNodes = node.connections.Where(connectedNode => !childParentSet.ContainsKey(connectedNode));
+				foreach (Node connectedNode in connectedNodes)
+				{
 					childParentSet.Add(connectedNode, node);
 					queue.Enqueue(connectedNode);
 				}

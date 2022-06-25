@@ -77,22 +77,9 @@ internal class AlgorithmsAssignment : Game
 
 		#region part 3
 
-		_pathFinder = new PathFinder(_graph, PathFinder.SearchType.Iterative);
+		_pathFinder = new PathFinder(_graph, PathFinder.SearchType.BreadthFirstSearch);
 
 		_agent = new PathFindingAgent(_graph, _pathFinder);
-
-		/////////////////////////////////////////////////
-		//Assignment 3.2 Good & 3.3 Excellent (Optional)
-		//
-		//There are no more explicit TODO's to guide you through these last two parts.
-		//You are on your own. Good luck, make the best of it. Make sure your code is testable.
-		//For example for A*, you must choose a setup in which it is possible to demonstrate your 
-		//algorithm works. Find the best place to add your code, and don't forget to move the
-		//PathFindingAgent below the creation of your PathFinder!
-
-		//------------------------------------------------------------------------------------------
-		/// REQUIRED BLOCK OF CODE TO ADD ALL OBJECTS YOU CREATED TO THE SCREEN IN THE CORRECT ORDER
-		/// LOOK BUT DON'T TOUCH :)
 
 		#endregion
 
