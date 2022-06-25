@@ -73,15 +73,15 @@ namespace Mathias
 
 		private List<Node> FindPathIterative(Node from, Node to)
 		{
-			LinkedList<Node> nodes = new();
+			Queue<Node> queue = new();
+			
 			Dictionary<Node, Node> childParentSet = new();
 
-			nodes.AddLast(from);
+			queue.Enqueue(from);
 			
-			while (nodes.Count > 0)
+			while(queue.Count > 0)
 			{
-				Node node = nodes.First();
-				nodes.RemoveFirst();
+				Node node = queue.Dequeue();
 				if(node == to)
 				{
 					List<Node> endList = new();
@@ -109,7 +109,7 @@ namespace Mathias
 					}
 
 					childParentSet.Add(connectedNode, node);
-					nodes.AddLast(connectedNode);
+					queue.Enqueue(connectedNode);
 				}
 			}
 
