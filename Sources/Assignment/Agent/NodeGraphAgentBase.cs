@@ -19,7 +19,6 @@ public abstract class NodeGraphAgentBase : AnimationSprite
 		Debug.Assert(nodeGraph != null, "Please pass in a node graph.");
 
 		SetOrigin(width / 2, height / 2);
-		System.Console.WriteLine(this.GetType().Name + " created.");
 	}
 
 	//override in subclass to implement any functionality

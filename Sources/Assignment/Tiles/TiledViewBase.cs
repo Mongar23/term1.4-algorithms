@@ -95,9 +95,7 @@ public abstract class TiledViewBase : GameObject
 	 */
 	public void Generate()
 	{
-		System.Console.WriteLine(this.GetType().Name + ".Generate: Generating tile view...");
 		generate();
-		System.Console.WriteLine(this.GetType().Name + ".Generate: tile view generated.");
 	}
 
 	protected abstract void generate();

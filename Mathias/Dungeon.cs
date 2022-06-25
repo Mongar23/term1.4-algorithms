@@ -10,13 +10,12 @@ namespace Mathias
 {
 	public class Dungeon : DungeonBase
 	{
+		private readonly GradeType gradeType;
 		private readonly List<Point> blackListedPoints = new();
-
-		private readonly bool drawBlacklist = false;
-		private int minimumRoomSize;
 		private readonly List<RoomPair> roomPairs = new();
+		private int minimumRoomSize;
 
-		public Dungeon(Size pSize) : base(pSize) { }
+		public Dungeon(Size pSize, GradeType gradeType) : base(pSize) => this.gradeType = gradeType;
 
 		protected override void generate(int minimumRoomSize)
 		{
@@ -24,13 +23,31 @@ namespace Mathias
 			stopwatch.Start();
 
 			this.minimumRoomSize = minimumRoomSize;
-			GenerateRooms();
-			GenerateDoors();
-			RemoveRooms();
-			ColorRooms();
+
+			switch (gradeType)
+			{
+				case GradeType.Sufficient:
+					GenerateRooms();
+					GenerateDoors();
+					foreach (Room room in rooms) { room.SetDoors(doors); }
+					break;
+
+				case GradeType.Good:
+					GenerateRooms();
+					GenerateDoors();
+					RemoveRooms();
+					ColorRooms();
+					break;
+
+				case GradeType.Excellent: throw new NotImplementedException();
+				default: throw new ArgumentOutOfRangeException();
+			}
 
 			int gridColumns = AlgorithmsAssignment.Grid.Columns;
-			rooms = rooms.OrderBy(room => room.Position.X + room.Position.Y * gridColumns).ToList();
+			rooms = rooms.OrderBy(room => room.Position.X + (room.Position.Y * gridColumns)).ToList();
+
+			Debug.Initialized(this, stopwatch.ElapsedMilliseconds);
+			stopwatch.Stop();
 		}
 
 		protected override void drawRooms(IEnumerable<Room> rooms, Pen wallColor, Brush fillColor = null)
@@ -50,12 +67,12 @@ namespace Mathias
 			{
 				Room splittingRoom = rooms[AlgorithmsAssignment.Random.Next(0, rooms.Count)];
 
-				if (unsplitableRooms.Contains(splittingRoom)) { continue; }
+				if(unsplitableRooms.Contains(splittingRoom)) { continue; }
 
 
 				Tuple<Room, Room> splitRooms = SplitRoom(splittingRoom);
 
-				if (splitRooms.Item2 == null) // Splitting failed.
+				if(splitRooms.Item2 == null) // Splitting failed.
 				{
 					unsplitableRooms.Add(splittingRoom);
 					continue;
@@ -88,12 +105,13 @@ namespace Mathias
 			Room a;
 			Room b;
 
-			if (baseRoom.IsSplitHorizontally)
+			if(baseRoom.IsSplitHorizontally)
 			{
-				if (baseRoom.Size.Width - minimumRoomSize < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
+				if(baseRoom.Size.Width - minimumRoomSize < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
 
 
-				int cutSize = baseRoom.Size.Width - AlgorithmsAssignment.Random.Next(minimumRoomSize, baseRoom.Size.Width - minimumRoomSize);
+				int cutSize = baseRoom.Size.Width -
+				              AlgorithmsAssignment.Random.Next(minimumRoomSize, baseRoom.Size.Width - minimumRoomSize);
 
 				a = new Room(baseRoom.Position.X, baseRoom.Position.Y, cutSize + 1, baseRoom.Size.Height);
 				b = new Room(baseRoom.Position.X + cutSize, baseRoom.Position.Y, baseRoom.Size.Width - cutSize, baseRoom.Size.Height);
@@ -102,10 +120,11 @@ namespace Mathias
 			}
 			else
 			{
-				if (baseRoom.Size.Height - minimumRoomSize < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
+				if(baseRoom.Size.Height - minimumRoomSize < minimumRoomSize) { return new Tuple<Room, Room>(baseRoom, null); }
 
 
-				int cutSize = baseRoom.Size.Height - AlgorithmsAssignment.Random.Next(minimumRoomSize, baseRoom.Size.Height - minimumRoomSize);
+				int cutSize = baseRoom.Size.Height -
+				              AlgorithmsAssignment.Random.Next(minimumRoomSize, baseRoom.Size.Height - minimumRoomSize);
 
 				a = new Room(baseRoom.Position.X, baseRoom.Position.Y, baseRoom.Size.Width, cutSize + 1);
 				b = new Room(baseRoom.Position.X, baseRoom.Position.Y + cutSize, baseRoom.Size.Width, baseRoom.Size.Height - cutSize);
@@ -153,13 +172,13 @@ namespace Mathias
 			{
 				int doorCount = room.GetDoorCount(doors);
 
-				if (doorCount == 0) //Check if room is an island or just pair-less.
+				if(doorCount == 0) //Check if room is an island or just pair-less.
 				{
 					foreach (Room neighbor in room.GetNeighbors(rooms))
 					{
 						Door door = GenerateDoor(room, neighbor);
 
-						if (door == null) { continue; }
+						if(door == null) { continue; }
 
 						doors.Add(door);
 						doorCount++;
@@ -171,7 +190,7 @@ namespace Mathias
 				{
 					0 => Color.Red,
 					1 => Color.Orange,
-					2 => Color.FromArgb(252, 227, 0), 
+					2 => Color.FromArgb(252, 227, 0),
 					>= 3 => Color.FromArgb(0, 252, 60),
 					_ => throw new ArgumentOutOfRangeException()
 				};
@@ -189,7 +208,7 @@ namespace Mathias
 			{
 				Door door = GenerateDoor(roomPair);
 
-				if (door == null) { continue; }
+				if(door == null) { continue; }
 
 				doors.Add(door);
 			}
@@ -223,12 +242,12 @@ namespace Mathias
 
 			do
 			{
-				if (roomPair.IsOverlappingHorizontally)
+				if(roomPair.IsOverlappingHorizontally)
 				{
 					int min = roomPair.Overlap.X + 2;
 					int max = (roomPair.Overlap.X + roomPair.Overlap.Width) - 2;
 
-					if (min > max) { return null; }
+					if(min > max) { return null; }
 
 					int doorX = AlgorithmsAssignment.Random.Next(min, max);
 					door = new Door(doorX, roomPair.Overlap.Y);
@@ -238,7 +257,7 @@ namespace Mathias
 					int min = roomPair.Overlap.Y + 2;
 					int max = (roomPair.Overlap.Y + roomPair.Overlap.Height) - 2;
 
-					if (min > max) { return null; }
+					if(min > max) { return null; }
 
 					int doorY = AlgorithmsAssignment.Random.Next(min, max);
 					door = new Door(roomPair.Overlap.X, doorY);
@@ -260,13 +279,13 @@ namespace Mathias
 				{
 					Rectangle overLap = Rectangle.Intersect(neighbor.area, farNeighbor.area);
 
-					if (overLap.IsEmpty) { continue; }
+					if(overLap.IsEmpty) { continue; }
 
 					// Already contains a door in the overlap.
-					if (doors.Any(door => overLap.Contains(door.location))) { continue; }
+					if(doors.Any(door => overLap.Contains(door.location))) { continue; }
 
 					Door door = GenerateDoor(neighbor, farNeighbor);
-					if (door == null) { continue; }
+					if(door == null) { continue; }
 
 					doors.Add(door);
 					break;

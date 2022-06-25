@@ -32,14 +32,12 @@ public class Node
 	{
 		location = pLocation;
 
-		//use an autoincrementing id as label
+		//use an auto incrementing id as label
 		id = ""+lastID++;
-		System.Console.WriteLine(id);
 	}
 
-	public override string ToString()
-	{
-		return id;
-	}
+	public override string ToString() => $"Node#{id}";
+
+	public Point GetScaledLocation(float scale) => new ((int)(location.X / scale), (int)(location.Y / scale));
 }
 
