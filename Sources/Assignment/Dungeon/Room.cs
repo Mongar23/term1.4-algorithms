@@ -11,29 +11,23 @@ public class Room
 	public bool IsSplitHorizontally { get; set; } = true;
 	public Color Color { get; set; }
 	public Point Position { get; }
+
+	/// <summary>
+	/// The area of the room without the walls.
+	/// </summary>
+	public Rectangle InnerArea { get; }
 	public Size Size { get; }
 	public List<Door> doors;
 	public Rectangle area;
 
-	public Room(Rectangle pArea)
+	private static Rectangle CalculateInnerArea(Rectangle full)
 	{
-		area = pArea;
-		Position = area.Location;
-		Size = area.Size;
-	}
-
-	public Room(Point position, Size size)
-	{
-		area = new Rectangle(position.X, position.Y, size.Width, size.Height);
-		Position = area.Location;
-		Size = area.Size;
-	}
-
-	public Room(int x, int y, int width, int height)
-	{
-		area = new Rectangle(x, y, width, height);
-		Position = area.Location;
-		Size = area.Size;
+		Rectangle rectangle = full;
+		rectangle.X += 1;
+		rectangle.Width -= 2;
+		rectangle.Y += 1;
+		rectangle.Height -= 2;
+		return rectangle;
 	}
 
 	public Point[] GetCorners()
@@ -59,9 +53,15 @@ public class Room
 		return roomsToCheck.Where(room => !Equals(room) && area.IntersectsWith(room.area)).ToArray();
 	}
 
-	public int GetDoorCount(IEnumerable<Door> doorsToCheck)
+	/// <summary>
+	///     Returns the number of <see cref="Door" />s the room is intersecting with.
+	/// </summary>
+	/// <param name="doorsToCheck">In case the door list is not set, this will be the collection to set the rooms with.</param>
+	/// <param name="forceUpdate">When true, the doors list will be set again.</param>
+	/// <returns>Count of the doors lists.</returns>
+	public int GetDoorCount(IEnumerable<Door> doorsToCheck, bool forceUpdate = false)
 	{
-		if(doors == null) { SetDoors(doorsToCheck); }
+		if (doors == null || forceUpdate) { SetDoors(doorsToCheck); }
 
 		return doors.Count;
 	}
@@ -72,22 +72,22 @@ public class Room
 
 	public override int GetHashCode() => base.GetHashCode();
 
-	private void SetDoors(IEnumerable<Door> doorsToCheck)
+	public void SetDoors(IEnumerable<Door> doorsToCheck)
 	{
 		List<Door> doors = new();
 
 		foreach (Door door in doorsToCheck)
 		{
-			if(!area.Contains(door.location)) { continue; }
+			if (!area.Contains(door.location)) { continue; }
 
-			if(door.RoomA == null)
+			if (door.RoomA == null)
 			{
 				door.RoomA = this;
 				doors.Add(door);
 				continue;
 			}
 
-			if(door.RoomB == null)
+			if (door.RoomB == null)
 			{
 				door.RoomB = this;
 				doors.Add(door);
@@ -102,8 +102,36 @@ public class Room
 
 	private bool Equals(Room other)
 	{
-		if(Position.X != other.Position.X || Position.Y != other.Position.Y) { return false; }
+		if (Position.X != other.Position.X || Position.Y != other.Position.Y) { return false; }
 
 		return Size.Width == other.Size.Width && Size.Height == other.Size.Height;
 	}
+
+	#region Constuctors
+
+	public Room(Rectangle pArea)
+	{
+		area = pArea;
+		InnerArea = CalculateInnerArea(area);
+		Position = area.Location;
+		Size = area.Size;
+	}
+
+	public Room(Point position, Size size)
+	{
+		area = new Rectangle(position.X, position.Y, size.Width, size.Height);
+		InnerArea = CalculateInnerArea(area);
+		Position = area.Location;
+		Size = area.Size;
+	}
+
+	public Room(int x, int y, int width, int height)
+	{
+		area = new Rectangle(x, y, width, height);
+		InnerArea = CalculateInnerArea(area);
+		Position = area.Location;
+		Size = area.Size;
+	}
+
+	#endregion
 }

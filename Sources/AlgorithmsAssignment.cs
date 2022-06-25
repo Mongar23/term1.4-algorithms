@@ -15,60 +15,67 @@ using Mathias.Utilities;
  * split into 3 major parts (see below). This means that you have three 2 week sprints to
  * work on your assignments.
  */
-class AlgorithmsAssignment : Game
+internal class AlgorithmsAssignment : Game
 {
-	public static Grid Grid { get; private set; }
-	public static Random Random { get; private set; }
-
-	//Required for assignment 1
-	DungeonBase _dungeon = null;
-
-	//Required for assignment 2
-	NodeGraphBase _graph = null;
-	TiledViewBase _tiledView = null;
-	NodeGraphAgentBase _agent = null;
-
-	//Required for assignment 3
-	PathFinderBase _pathFinder = null;
+	private const int MIN_ROOM_SIZE = 5;
 
 	//common settings
-	private const int SCALE = 20;				//TODO: experiment with changing this
-	private const int MIN_ROOM_SIZE = 5;		//TODO: use this setting in your dungeon generator
+	private const int SCALE = 20;
+	public static Grid Grid { get; private set; }
+	public static Random Random { get; private set; }
+	public static AlgorithmsAssignment Instance { get; private set; }
 
-	public AlgorithmsAssignment() : base(800, 600, false, true, -1, -1, false)
+	//Required for assignment 1
+	private DungeonBase _dungeon;
+	private NodeGraphAgentBase _agent;
+
+	//Required for assignment 2
+	private NodeGraphBase _graph;
+
+	//Required for assignment 3
+	private PathFinderBase _pathFinder = null;
+	private TiledViewBase _tiledView;
+
+	public AlgorithmsAssignment() : base(800, 600, false)
 	{
+		Instance = game as AlgorithmsAssignment;
+
 		GL.ClearColor(1, 1, 1, 1);
 		GL.glfwSetWindowTitle("Algorithms Game");
 		Random = new Random(1);
-		
-		Grid grid = new (width, height, SCALE);
-		Grid = grid;
-		Size size = new (width / SCALE, height / SCALE);
 
-		_dungeon = new Dungeon(size);
+		Grid grid = new(width, height, SCALE);
+		Grid = grid;
+		Size size = new(width / SCALE, height / SCALE);
+
+		#region part 1
+
+		_dungeon = new Dungeon(size, GradeType.Good);
 		if (_dungeon != null)
 		{
 			_dungeon.scale = SCALE;
 			_dungeon.Generate(MIN_ROOM_SIZE);
 		}
 
-		
+		#endregion
 
-		_graph = new NodeGraph(_dungeon);
+		#region part 2
+
+		_graph = new NodeGraph(_dungeon, NodeGraph.Level.Low);
 		_graph?.Generate();
 
 		_agent = new NodeGraphAgent(_graph, GradeType.Good);
 		
-		//_tiledView = new SampleTiledView(_dungeon, TileType.GROUND);
-		_tiledView = new TiledDungeonView(_dungeon, TileType.GROUND); 
-		if (_tiledView != null) _tiledView.Generate();
+		if ((_agent as NodeGraphAgent)?.gradeType == GradeType.Good)
+		{
+			_tiledView = new TiledDungeonView(_dungeon, TileType.GROUND);
+			_tiledView?.Generate();
+		}
+		
 
-		////////////////////////////////////////////////////////////
-		//Assignment 2.2 Good (Optional) RandomWayPointAgent
-		//
-		//TODO: Comment out the OnGraphWayPointAgent above, implement a RandomWayPointAgent class and uncomment it below
+		
 
-		//_agent = new RandomWayPointAgent(_graph);	
+		#endregion
 
 		//////////////////////////////////////////////////////////////
 		//Assignment 2.3 Excellent (Optional) LowLevelDungeonNodeGraph
@@ -113,18 +120,31 @@ class AlgorithmsAssignment : Game
 		/// REQUIRED BLOCK OF CODE TO ADD ALL OBJECTS YOU CREATED TO THE SCREEN IN THE CORRECT ORDER
 		/// LOOK BUT DON'T TOUCH :)
 
-		if (grid != null) AddChild(grid);
-		if (_dungeon != null) AddChild(_dungeon);
-		if (_tiledView != null) AddChild(_tiledView);
-		if (_graph != null) AddChild(_graph);
-		if (_pathFinder != null) AddChild(_pathFinder);				//pathfinder on top of that
-		if (_graph != null) AddChild(new NodeLabelDrawer(_graph));	//node label display on top of that
-		if (_agent != null) AddChild(_agent);                       //and last but not least the agent itself
+		if (grid != null) { AddChild(grid); }
+
+		if (_dungeon != null) { AddChild(_dungeon); }
+
+		if (_tiledView != null) { AddChild(_tiledView); }
+
+		if (_graph != null) { AddChild(_graph); }
+
+		if (_pathFinder != null)
+		{
+			AddChild(_pathFinder);				//pathfinder on top of that
+		}
+
+		if (_graph != null)
+		{
+			AddChild(new NodeLabelDrawer(_graph));	//node label display on top of that
+		}
+
+		if (_agent != null)
+		{
+			AddChild(_agent); //and last but not least the agent itself
+		}
 
 		/////////////////////////////////////////////////
 		//The end!
 		////
 	}
 }
-
-

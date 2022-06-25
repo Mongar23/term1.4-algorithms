@@ -49,8 +49,7 @@ public abstract class DungeonBase : Canvas
 		GL.TexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
 		_texture.Unbind();
 		/**/
-
-		System.Console.WriteLine(this.GetType().Name + " created.");
+		
 	}
 
 	/**
@@ -61,14 +60,10 @@ public abstract class DungeonBase : Canvas
 	 */
 	public void Generate(int pMinimumRoomSize)
 	{
-		System.Console.WriteLine(this.GetType().Name + ".Generate:Generating dungeon...");
-
 		rooms.Clear();
 		doors.Clear();
 
 		generate(pMinimumRoomSize);
-
-		System.Console.WriteLine(this.GetType().Name + ".Generate:Dungeon generated.");
 
 		if (autoDrawAfterGenerate) draw();
 	}

@@ -7,45 +7,46 @@ namespace Mathias.Utilities
 	/// <summary>
 	///     A helper class to make logging information to the console easier.
 	/// </summary>
+	//todo: add null checks
 	public static class Debug
 	{
 		/// <summary>
 		///     Log a <paramref name="message" /> to the console with a red "[ERROR]" tag in front of it.
 		/// </summary>
 		/// <param name="message">The text that has to be displayed in the console</param>
-		public static void LogError(string message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string callerPath = null)
+		public static void LogError(object message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string callerPath = null)
 		{
 			Console.ForegroundColor = ConsoleColor.Red;
 			string fileName = callerPath.Split('\\').Last();
 			Console.Write($"[ERROR {fileName}:{lineNumber}] ");
 			Console.ResetColor();
-			Console.WriteLine(message);
+			Console.WriteLine(message.ToString());
 		}
 
 		/// <summary>
 		///     Log a <paramref name="message" /> to the console with a gray-ish "[INFO]" tag in front of it.
 		/// </summary>
 		/// <param name="message">The text that has to be displayed in the console</param>
-		public static void Log(string message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string callerPath = null)
+		public static void Log(object message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string callerPath = null)
 		{
 			Console.ForegroundColor = ConsoleColor.DarkGray;
 			string fileName = callerPath.Split('\\').Last();
 			Console.Write($"[INFO {fileName}:{lineNumber}] ");
 			Console.ResetColor();
-			Console.WriteLine(message);
+			Console.WriteLine(message.ToString());
 		}
 
 		/// <summary>
 		///     Log a <paramref name="message" /> to the console with a yellow "[WARNING]" tag in front of it.
 		/// </summary>
 		/// <param name="message">The text that has to be displayed in the console</param>
-		public static void LogWaring(string message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string callerPath = null)
+		public static void LogWaring(object message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string callerPath = null)
 		{
 			Console.ForegroundColor = ConsoleColor.Yellow;
 			string fileName = callerPath.Split('\\').Last();
 			Console.Write($"[WARNING {fileName}:{lineNumber}] ");
 			Console.ResetColor();
-			Console.WriteLine(message);
+			Console.WriteLine(message.ToString());
 		}
 
 		/// <summary>
@@ -54,12 +55,12 @@ namespace Mathias.Utilities
 		/// </summary>
 		/// <param name="message">The text that has to be displayed in the console</param>
 		/// <param name="elapsedTime">The time it took to initialize the object.</param>
-		public static void Initialized(string message, double elapsedTime)
+		public static void Initialized(object initializedObject, double elapsedTime)
 		{
 			Console.ForegroundColor = ConsoleColor.Blue;
 			Console.Write("[INITIALIZED] ");
 			Console.ResetColor();
-			Console.WriteLine($"{message} in {elapsedTime}ms...");
+			Console.WriteLine($"{initializedObject.GetType().Name} in {elapsedTime}ms...");
 		}
 
 		/// <summary>
@@ -67,14 +68,14 @@ namespace Mathias.Utilities
 		///     in color whether the unit test has passed or failed.
 		/// </summary>
 		/// <param name="message">The text that has to be displayed in the console</param>
-		public static void UnitTest(string message, bool condition)
+		public static void UnitTest(object message, bool condition)
 		{
 			Console.ForegroundColor = ConsoleColor.DarkMagenta;
 			Console.Write("[UNIT-TEST] ");
 			Console.ResetColor();
 			Console.Write(message);
 
-			var result = string.Empty;
+			string result = string.Empty;
 
 			if (condition)
 			{
@@ -88,7 +89,7 @@ namespace Mathias.Utilities
 			}
 
 			const int standardValuesLength = 20;
-			var whitespace = new string(' ', Console.WindowWidth - message.Length - standardValuesLength);
+			var whitespace = new string(' ', Console.WindowWidth - message.ToString().Length - standardValuesLength);
 			Console.WriteLine(whitespace + result);
 
 			Console.ResetColor();
