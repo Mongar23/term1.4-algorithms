@@ -8,7 +8,7 @@ using System.Collections.Generic;
  */
 class SamplePathFinder : PathFinderBase	{
 
-	public SamplePathFinder(NodeGraphBase pGraphBase) : base(pGraphBase) {}
+	public SamplePathFinder(NodeGraphBase pGraph) : base(pGraph) {}
 
 	protected override List<Node> generate(Node pFrom, Node pTo)
 	{

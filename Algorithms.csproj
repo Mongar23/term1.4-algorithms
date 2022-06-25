@@ -86,6 +86,7 @@
     <Compile Include="GXPEngine\Utils\MouseHandler.cs" />
     <Compile Include="GXPEngine\Utils\Time.cs" />
     <Compile Include="GXPEngine\Utils\Utils.cs" />
+    <Compile Include="Mathias\Agents\PathFindingAgent.cs" />
     <Compile Include="Mathias\Dungeon.cs" />
     <Compile Include="Mathias\NodeGraph.cs" />
     <Compile Include="Mathias\PathFinder.cs" />
@@ -95,7 +96,7 @@
     <Compile Include="Mathias\Utilities\GradeType.cs" />
     <Compile Include="Mathias\Utilities\SizeExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Mathias\NodeGraphAgent.cs" />
+    <Compile Include="Mathias\Agents\NodeGraphAgent.cs" />
     <Compile Include="Sources\Assignment\Dungeon\Door.cs" />
     <Compile Include="Sources\Assignment\Dungeon\DungeonBase.cs" />
     <Compile Include="Sources\Assignment\Dungeon\Room.cs" />
@@ -140,5 +141,6 @@
   <ItemGroup>
     <Content Include="sources\Solution\readme.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

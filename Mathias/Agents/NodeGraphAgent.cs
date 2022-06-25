@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Mathias.Utilities;
 
-namespace Mathias
+namespace Mathias.Agents
 {
 	public class NodeGraphAgent : NodeGraphAgentBase
 	{
 		private readonly Action innerUpdate;
 		private readonly List<Node> nodesToVisit = new();
+		private readonly PathFinder pathFinder = null;
 
 		public GradeType gradeType;
 		private Node targetNode;

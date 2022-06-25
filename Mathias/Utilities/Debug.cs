@@ -60,6 +60,13 @@ namespace Mathias.Utilities
 			Console.ForegroundColor = ConsoleColor.Blue;
 			Console.Write("[INITIALIZED] ");
 			Console.ResetColor();
+			
+			if(initializedObject is string)
+			{
+				Console.WriteLine($"{initializedObject} in {elapsedTime}ms...");
+				return;
+			}
+
 			Console.WriteLine($"{initializedObject.GetType().Name} in {elapsedTime}ms...");
 		}
 
