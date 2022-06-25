@@ -18,9 +18,7 @@ public class Node
 	public readonly List<Node> connections = new List<Node>();
 	public readonly Point location;
 	public readonly string id;
-
-	public Node parentNode { get; set; }
-
+	
 	/**
 	 * Create a node.
 	 * @param pLocation the position of this node

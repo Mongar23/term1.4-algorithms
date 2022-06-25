@@ -77,7 +77,7 @@ internal class AlgorithmsAssignment : Game
 
 		#region part 3
 
-		_pathFinder = new PathFinder(_graph, PathFinder.SearchType.Recursive);
+		_pathFinder = new PathFinder(_graph, PathFinder.SearchType.Iterative);
 
 		_agent = new PathFindingAgent(_graph, _pathFinder);
 

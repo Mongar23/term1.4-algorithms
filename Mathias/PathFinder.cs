@@ -18,7 +18,7 @@ namespace Mathias
 
 		private List<Node> path;
 
-		public PathFinder(NodeGraphBase pGraphBase, SearchType searchType) : base(pGraphBase)
+		public PathFinder(NodeGraphBase pGraph, SearchType searchType) : base(pGraph)
 		{
 			this.searchType = searchType;
 			path = new List<Node>();
@@ -26,12 +26,8 @@ namespace Mathias
 
 		protected override List<Node> generate(Node from, Node to)
 		{
-			Debug.Log("generate !!!!!!!!!");
-
 			Stopwatch stopwatch = new();
 			stopwatch.Start();
-
-			Debug.Log(searchType);
 
 			path = new List<Node>();
 
@@ -41,9 +37,11 @@ namespace Mathias
 					FindPathRecursive(from, to, new List<Node>());
 					break;
 
-				case SearchType.Iterative: 
-					path = FindPathIterative(from, to);
+				case SearchType.Iterative:
+					List<Node> nodes = FindPathIterative(from, to);
+					path = nodes;
 					break;
+
 				default: throw new ArgumentOutOfRangeException();
 			}
 
@@ -73,47 +71,45 @@ namespace Mathias
 			}
 		}
 
-		private List<Node> FindPathIterative(Node from, Node endNode)
+		private List<Node> FindPathIterative(Node from, Node to)
 		{
-			Queue<Node> nodeQueue = new();
-			Debug.Log($"{from.parentNode}, {endNode.parentNode}");
+			LinkedList<Node> nodes = new();
+			Dictionary<Node, Node> childParentSet = new();
 
-			nodeQueue.Enqueue(from);
-
-			while (nodeQueue.Count > 0)
+			nodes.AddLast(from);
+			
+			while (nodes.Count > 0)
 			{
-				Node node = nodeQueue.Dequeue();
-
-				if(from == endNode)
+				Node node = nodes.First();
+				nodes.RemoveFirst();
+				if(node == to)
 				{
 					List<Node> endList = new();
 					Node current = node;
-
 					while (current != null && current != from)
 					{
 						endList.Add(current);
-						current = current.parentNode;
+						current = childParentSet[current];
 					}
 
 					if(current == null) { return null; }
 
-					endList.Add(current);
+					endList.Add(from);
 					endList.Reverse();
+					foreach (Node n in endList) { Console.WriteLine(n); }
 
 					return endList;
 				}
-
-				List<Node> childNodes = node.connections.ToList();
-
-				foreach (Node childNode in childNodes)
+				
+				foreach (Node connectedNode in node.connections)
 				{
-					if(childNode.parentNode != null)
+					if(childParentSet.ContainsKey(connectedNode))
 					{
 						continue;
 					}
 
-					childNode.parentNode = node;
-					nodeQueue.Enqueue(childNode);
+					childParentSet.Add(connectedNode, node);
+					nodes.AddLast(connectedNode);
 				}
 			}
 

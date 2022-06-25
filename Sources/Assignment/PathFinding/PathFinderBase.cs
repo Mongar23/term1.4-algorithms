@@ -18,7 +18,7 @@ public abstract class PathFinderBase : Canvas
 	protected Node _endNode;
 	protected List<Node> _lastCalculatedPath = null;
 
-	protected NodeGraphBase nodeGraphBase;
+	protected NodeGraphBase nodeGraph;
 
 	//some values for drawing the path
 	private Pen _outlinePen = new Pen(Color.Black, 4);
@@ -29,11 +29,11 @@ public abstract class PathFinderBase : Canvas
 	private Brush _endNodeColor = Brushes.Red;
 	private Brush _pathNodeColor = Brushes.Yellow;
 
-	public PathFinderBase (NodeGraphBase pGraphBase) : base (pGraphBase.width, pGraphBase.height)
+	public PathFinderBase (NodeGraphBase pGraph) : base (pGraph.width, pGraph.height)
 	{
-		nodeGraphBase = pGraphBase;
-		nodeGraphBase.OnNodeShiftLeftClicked += (node) => { _startNode = node; draw(); };
-		nodeGraphBase.OnNodeShiftRightClicked += (node) => { _endNode = node; draw(); };
+		nodeGraph = pGraph;
+		nodeGraph.OnNodeShiftLeftClicked += (node) => { _startNode = node; draw(); };
+		nodeGraph.OnNodeShiftRightClicked += (node) => { _endNode = node; draw(); };
 
 		Console.WriteLine("\n-----------------------------------------------------------------------------");
 		Console.WriteLine(this.GetType().Name + " created.");
@@ -120,7 +120,7 @@ public abstract class PathFinderBase : Canvas
 
 	protected virtual void drawNode(Node pNode, Brush pColor)
 	{
-		int nodeSize = nodeGraphBase.nodeSize+2;
+		int nodeSize = nodeGraph.nodeSize+2;
 
 		//colored fill
 		graphics.FillEllipse(
