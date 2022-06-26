@@ -16,7 +16,7 @@ namespace Mathias.Agents
 		{
 			this.pathFinder = pathFinder;
 
-			int randomNode = AlgorithmsAssignment.Random.Next(0, nodeGraph.nodes.Count);
+			int randomNode = AlgorithmsAssignment.Instance.Random.Next(0, nodeGraph.nodes.Count);
 			currentNode = nodeGraph.nodes[randomNode];
 			jumpToNode(currentNode);
 

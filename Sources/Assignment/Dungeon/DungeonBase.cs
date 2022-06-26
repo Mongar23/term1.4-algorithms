@@ -3,18 +3,7 @@ using GXPEngine.OpenGL;
 using System.Collections.Generic;
 using System.Drawing;
 
-/**
- * The base Dungeon class. 
- * 
- * This class is very limited, it contains:
- *	- a(n empty) list of rooms
- *	- a(n empty) list of doors
- *	- code to visualize all rooms and doors.
- * 
- * TODO:
- * - Read carefully through all the code below, so that you know which helper methods are available to you.
- * - Create a subclass of this class and override the generate method (see the SampleDungeon for an example).
- */
+
 public abstract class DungeonBase : Canvas
 {
 	//the (unscaled) dimensions of the dungeon (basically how 'tiles' wide and high)
@@ -28,8 +17,6 @@ public abstract class DungeonBase : Canvas
 	//This might be handy while debugging your own algorithm.
 	protected bool autoDrawAfterGenerate = true;
 
-	//The colors for the walls and doors
-	//TODO:try changing 255 to 128 to see where the room boundaries are...
 	private Pen wallPen = new Pen(Color.FromArgb(255, Color.Black));
 	private Pen doorPen = Pens.White;
 
@@ -67,8 +54,7 @@ public abstract class DungeonBase : Canvas
 
 		if (autoDrawAfterGenerate) draw();
 	}
-
-	//TODO: Override this method in your subclass to generate a dungeon as described in assignment 1
+	
 	protected abstract void generate(int pMinimumRoomSize);
 
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -129,9 +115,8 @@ public abstract class DungeonBase : Canvas
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	///	This section contains helper methods to print information about the dungeon to the console
 
-	//TODO: implement a toString/print method for debugging
 	public override string ToString()
 	{
-		return "Dungeon: implement/override this method to print info about all rooms and doors";
+		return $"Dungeon(w:{size.Width} h:{size.Height}) with {rooms.Count} rooms and {doors.Count} doors";
 	}
 }

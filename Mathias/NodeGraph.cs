@@ -56,15 +56,14 @@ namespace Mathias
 			Dictionary<Door, Node> nodedDoors = new();
 
 			Room firstRoom = dungeon.rooms[0];
-
 			roomsToNode.Enqueue(firstRoom);
-			nodedRooms.Add(firstRoom);
 
 			while (roomsToNode.Count > 0)
 			{
 				Room room = roomsToNode.Dequeue();
 
 				Node roomNode = new(GetRoomCenter(room));
+				nodedRooms.Add(firstRoom);
 				nodes.Add(roomNode);
 
 				foreach (Door door in room.doors)
@@ -103,20 +102,24 @@ namespace Mathias
 
 
 			Point[] doorPoints = dungeon.doors.Select(door => door.location).ToArray();
+			Rectangle[] innerRooms = dungeon.rooms.Select(room => room.InnerArea).ToArray();
 
 			for (int i = 0; i < rows * columns; i++)
 			{
 				Point point = new(i % columns, i / columns);
 
-				if(!dungeon.rooms.Any(room => room.InnerArea.Contains(point)) && !doorPoints.Contains(point)) { continue; }
+				if(!innerRooms.Any(innerRoom => innerRoom.Contains(point)) && !doorPoints.Contains(point)) { continue; }
 
 				Node node = new(GetPointCenter(point));
 				nodes.Add(node);
-				node.connections.AddRange(GetNeighbors(node));
-				foreach (Node connectedNode in node.connections) { connectedNode.connections.Add(node); }
+
+				foreach (Node neighborNode in GetNeighbors(node))
+				{
+					AddConnection(node, neighborNode);
+				}
 			}
 
-			Node[] GetNeighbors(Node node)
+			IEnumerable<Node> GetNeighbors(Node node)
 			{
 				List<Node> neighborNodes = new();
 				Point scaledPoint = node.GetScaledLocation(dungeon.scale);
@@ -157,7 +160,7 @@ namespace Mathias
 					n.GetScaledLocation(dungeon.scale).Y == scaledPoint.Y + 1);
 				if(rightBottom != null) { neighborNodes.Add(rightBottom); }
 
-				return neighborNodes.ToArray();
+				return neighborNodes;
 			}
 		}
 

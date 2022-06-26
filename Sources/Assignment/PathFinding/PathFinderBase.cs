@@ -3,15 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-/**
- * This class is the base class for your pathfinder, you 'only' have to override generate so that it returns
- * the requested path and then it will handle the visualization part for you. This class can be used in two ways:
- * 1. By setting the start and end node by left/right shift-clicking and then pressing G (for Generate)
- * 2. By calling Generate directly with the given start and end node
- * 
- * TODO:
- * - create a subclass for this class and override the generate method (See SamplePathFinder for an example)
- */
 public abstract class PathFinderBase : Canvas
 {
 	protected Node _startNode;							
@@ -91,8 +82,6 @@ public abstract class PathFinderBase : Canvas
 		//draw start and end if we have one
 		if (_startNode != null) drawNode(_startNode, _startNodeColor);
 		if (_endNode != null) drawNode(_endNode, _endNodeColor);
-
-		//TODO: you could override this method and draw your own additional stuff for debugging
 	}
 
 	protected virtual void drawPath()

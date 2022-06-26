@@ -6,48 +6,39 @@ using Mathias;
 using Mathias.Agents;
 using Mathias.Utilities;
 
-/**
- * This is the main 'game' for the Algorithms Assignment that accompanies the Algorithms course.
- * 
- * Read carefully through the assignment that you are currently working on
- * and then through the code looking for all pointers & TODO's that you have to implement.
- * 
- * The course is 6 weeks long and this is the only assignment/code that you will get,
- * split into 3 major parts (see below). This means that you have three 2 week sprints to
- * work on your assignments.
- */
 internal class AlgorithmsAssignment : Game
 {
 	private const int MIN_ROOM_SIZE = 5;
-	private const int SCALE = 20;
-
-	public static Grid Grid { get; private set; }
-	public static Random Random { get; private set; }
-	public static AlgorithmsAssignment Instance { get; private set; }
+	private const int SCALE = 40;
 
 	//Required for assignment 1
-	private DungeonBase _dungeon;
-	private NodeGraphAgentBase _agent;
+	private readonly DungeonBase _dungeon;
+	private readonly NodeGraphAgentBase _agent;
 
 	//Required for assignment 2
-	private NodeGraphBase _graph;
+	private readonly NodeGraphBase _graph;
 
 	//Required for assignment 3
-	private PathFinderBase _pathFinder = null;
-	private TiledViewBase _tiledView;
+	private readonly PathFinderBase _pathFinder;
+	private readonly TiledViewBase _tiledView;
+
+	public static AlgorithmsAssignment Instance { get; private set; }
+	public bool ExtensiveLogging { get; private set; }
+	public Grid Grid { get; }
+	public Random Random { get; }
 
 
-	public AlgorithmsAssignment() : base(800, 600, false)
+	public AlgorithmsAssignment(int windowWidth, int windowHeight) : base(windowWidth, windowHeight, false)
 	{
 		Instance = game as AlgorithmsAssignment;
 
 		GL.ClearColor(1, 1, 1, 1);
 		GL.glfwSetWindowTitle("Algorithms Game");
-		Random = new Random(1);
+		Random = new Random();
 
-		Grid grid = new(width, height, SCALE);
-		Grid = grid;
+		Grid = new Grid(width, height, SCALE);
 		Size size = new(width / SCALE, height / SCALE);
+		ExtensiveLogging = true;
 
 		#region part 1
 
@@ -65,9 +56,9 @@ internal class AlgorithmsAssignment : Game
 		_graph = new NodeGraph(_dungeon, NodeGraph.Level.High);
 		_graph?.Generate();
 
-		_agent = new NodeGraphAgent(_graph, GradeType.Good);
-		
-		if ((_agent as NodeGraphAgent)?.gradeType == GradeType.Good)
+		_agent = new NodeGraphAgent(_graph, GradeType.Sufficient);
+
+		if (((NodeGraphAgent)_agent).gradeType == GradeType.Good)
 		{
 			_tiledView = new TiledDungeonView(_dungeon, TileType.GROUND);
 			_tiledView?.Generate();
@@ -83,9 +74,9 @@ internal class AlgorithmsAssignment : Game
 
 		#endregion
 
+		#region Add all as children
 
-
-		if (grid != null) { AddChild(grid); }
+		if(Grid != null){ AddChild(Grid);}
 
 		if (_dungeon != null) { AddChild(_dungeon); }
 
@@ -93,23 +84,12 @@ internal class AlgorithmsAssignment : Game
 
 		if (_graph != null) { AddChild(_graph); }
 
-		if (_pathFinder != null)
-		{
-			AddChild(_pathFinder);				//pathfinder on top of that
-		}
+		if (_pathFinder != null) { AddChild(_pathFinder); }
 
-		if (_graph != null)
-		{
-			AddChild(new NodeLabelDrawer(_graph));	//node label display on top of that
-		}
+		if (_graph != null) { AddChild(new NodeLabelDrawer(_graph)); }
 
-		if (_agent != null)
-		{
-			AddChild(_agent); //and last but not least the agent itself
-		}
+		if (_agent != null) { AddChild(_agent); }
 
-		/////////////////////////////////////////////////
-		//The end!
-		////
+		#endregion
 	}
 }

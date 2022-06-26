@@ -6,8 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{66F25691-4FBE-4BCD-A610-0E740B8F3CED}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <AssemblyName>term1.4-algorithms</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -122,8 +121,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

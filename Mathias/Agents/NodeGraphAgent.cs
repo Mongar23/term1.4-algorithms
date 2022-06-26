@@ -26,7 +26,7 @@ namespace Mathias.Agents
 
 			if (nodeGraph.nodes.Count < 0) { throw new ArgumentException("The passed in node graph has no nodes"); }
 
-			int randomNodeNumber = AlgorithmsAssignment.Random.Next(0, nodeGraph.nodes.Count);
+			int randomNodeNumber = AlgorithmsAssignment.Instance.Random.Next(0, nodeGraph.nodes.Count);
 			currentNode = nodeGraph.nodes[randomNodeNumber];
 			jumpToNode(currentNode);
 
@@ -112,7 +112,7 @@ namespace Mathias.Agents
 				AlgorithmsAssignment.Instance.Destroy();
 				return;
 			}
-			int randomNodeIndex = AlgorithmsAssignment.Random.Next(0, currentNode.connections.Count);
+			int randomNodeIndex = AlgorithmsAssignment.Instance.Random.Next(0, currentNode.connections.Count);
 			targetNode = currentNode.connections[randomNodeIndex];
 		}
 
@@ -145,7 +145,7 @@ namespace Mathias.Agents
 
 			do
 			{
-				int r = AlgorithmsAssignment.Random.Next(0, currentNode.connections.Count);
+				int r = AlgorithmsAssignment.Instance.Random.Next(0, currentNode.connections.Count);
 				targetNode = currentNode.connections[r];
 			} while (targetNode == lastVisitedNode); //Select random node which is not the last visited node.
 		}
