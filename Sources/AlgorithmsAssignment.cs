@@ -68,7 +68,7 @@ internal class AlgorithmsAssignment : Game
 
 		#region part 3
 
-		_pathFinder = new PathFinder(_graph, PathFinder.SearchType.BreadthFirstSearch);
+		_pathFinder = new PathFinder(_graph, PathFinder.SearchType.BFS);
 
 		_agent = new PathFindingAgent(_graph, _pathFinder);
 

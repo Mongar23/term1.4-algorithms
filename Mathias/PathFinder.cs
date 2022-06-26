@@ -11,7 +11,7 @@ namespace Mathias
 		public enum SearchType
 		{
 			Recursive,
-			BreadthFirstSearch
+			BFS
 		}
 
 		private readonly SearchType searchType;
@@ -37,9 +37,8 @@ namespace Mathias
 					FindPathRecursive(from, to, new List<Node>());
 					break;
 
-				case SearchType.BreadthFirstSearch:
-					List<Node> nodes = FindPathIterative(from, to);
-					path = nodes;
+				case SearchType.BFS:
+					path = FindPathBFS(from, to);
 					break;
 
 				default: throw new ArgumentOutOfRangeException();
@@ -70,7 +69,7 @@ namespace Mathias
 			}
 		}
 
-		private List<Node> FindPathIterative(Node from, Node to)
+		private List<Node> FindPathBFS(Node from, Node to)
 		{
 			Queue<Node> queue = new();
 			

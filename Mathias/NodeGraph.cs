@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using Mathias.Utilities;
+using Debug = Mathias.Utilities.Debug;
 
 namespace Mathias
 {
@@ -29,7 +30,7 @@ namespace Mathias
 
 		protected override void generate()
 		{
-			System.Diagnostics.Stopwatch stopwatch = new ();
+			Stopwatch stopwatch = new();
 			stopwatch.Start();
 
 			switch (level)
@@ -52,27 +53,32 @@ namespace Mathias
 		private void GenerateHighLevel()
 		{
 			Queue<Room> roomsToNode = new();
-			List<Room> nodedRooms = new();
+			List<Room> queuedRooms = new();
 			Dictionary<Door, Node> nodedDoors = new();
 
 			Room firstRoom = dungeon.rooms[0];
 			roomsToNode.Enqueue(firstRoom);
+			queuedRooms.Add(firstRoom);
 
 			while (roomsToNode.Count > 0)
 			{
 				Room room = roomsToNode.Dequeue();
 
 				Node roomNode = new(GetRoomCenter(room));
-				nodedRooms.Add(firstRoom);
+				Debug.Log($"Added {roomNode} for {room}");
 				nodes.Add(roomNode);
 
 				foreach (Door door in room.doors)
 				{
 					Node doorNode;
 
-					if(!nodedDoors.ContainsKey(door))
+					if (!nodedDoors.ContainsKey(door))
 					{
 						doorNode = new Node(GetPointCenter(door.location));
+						if (AlgorithmsAssignment.Instance.ExtensiveLogging)
+						{
+							Debug.Log($"Added {doorNode} for door({door.location})");
+						}
 
 						nodedDoors.Add(door, doorNode);
 						nodes.Add(doorNode);
@@ -81,16 +87,16 @@ namespace Mathias
 
 					AddConnection(roomNode, doorNode);
 
-					if(!nodedRooms.Contains(door.RoomA))
+					if (!queuedRooms.Contains(door.RoomA))
 					{
 						roomsToNode.Enqueue(door.RoomA);
-						nodedRooms.Add(door.RoomA);
+						queuedRooms.Add(door.RoomA);
 					}
 
-					if(nodedRooms.Contains(door.RoomB)) { continue; }
+					if (queuedRooms.Contains(door.RoomB)) { continue; }
 
 					roomsToNode.Enqueue(door.RoomB);
-					nodedRooms.Add(door.RoomB);
+					queuedRooms.Add(door.RoomB);
 				}
 			}
 		}
@@ -108,57 +114,56 @@ namespace Mathias
 			{
 				Point point = new(i % columns, i / columns);
 
-				if(!innerRooms.Any(innerRoom => innerRoom.Contains(point)) && !doorPoints.Contains(point)) { continue; }
+				if (!innerRooms.Any(innerRoom => innerRoom.Contains(point)) && !doorPoints.Contains(point)) { continue; }
 
 				Node node = new(GetPointCenter(point));
+				if (AlgorithmsAssignment.Instance.ExtensiveLogging) { Debug.Log($"Created {node} for ({point.X},{point.Y})"); }
+
 				nodes.Add(node);
 
-				foreach (Node neighborNode in GetNeighbors(node))
-				{
-					AddConnection(node, neighborNode);
-				}
+				foreach (Node neighborNode in GetNeighbors(node)) { AddConnection(node, neighborNode); }
 			}
 
 			IEnumerable<Node> GetNeighbors(Node node)
 			{
 				List<Node> neighborNodes = new();
 				Point scaledPoint = node.GetScaledLocation(dungeon.scale);
-				
+
 				Node leftTop = nodes.Find(n =>
 					n.GetScaledLocation(dungeon.scale).X == scaledPoint.X - 1 &&
 					n.GetScaledLocation(dungeon.scale).Y == scaledPoint.Y - 1);
-				if(leftTop != null) { neighborNodes.Add(leftTop); }
+				if (leftTop != null) { neighborNodes.Add(leftTop); }
 
 				Node left = nodes.Find(n =>
 					n.GetScaledLocation(dungeon.scale).X == scaledPoint.X - 1 && n.location.Y == node.location.Y);
-				if(left != null) { neighborNodes.Add(left); }
+				if (left != null) { neighborNodes.Add(left); }
 
 				Node leftBottom = nodes.Find(n =>
 					n.GetScaledLocation(dungeon.scale).X == scaledPoint.X - 1 &&
 					n.GetScaledLocation(dungeon.scale).Y == scaledPoint.Y + 1);
-				if(leftBottom != null) { neighborNodes.Add(leftBottom); }
+				if (leftBottom != null) { neighborNodes.Add(leftBottom); }
 
 				Node top = nodes.Find(
 					n => n.location.X == node.location.X && n.GetScaledLocation(dungeon.scale).Y == scaledPoint.Y + 1);
-				if(top != null) { neighborNodes.Add(top); }
+				if (top != null) { neighborNodes.Add(top); }
 
 				Node bottom = nodes.Find(n =>
 					n.location.X == node.location.X && n.GetScaledLocation(dungeon.scale).Y == scaledPoint.Y - 1);
-				if(bottom != null) { neighborNodes.Add(bottom); }
+				if (bottom != null) { neighborNodes.Add(bottom); }
 
 				Node rightTop = nodes.Find(n =>
 					n.GetScaledLocation(dungeon.scale).X == scaledPoint.X + 1 &&
 					n.GetScaledLocation(dungeon.scale).Y == scaledPoint.Y - 1);
-				if(rightTop != null) { neighborNodes.Add(rightTop); }
+				if (rightTop != null) { neighborNodes.Add(rightTop); }
 
 				Node right = nodes.Find(n =>
 					n.GetScaledLocation(dungeon.scale).X == scaledPoint.X + 1 && n.location.Y == node.location.Y);
-				if(right != null) { neighborNodes.Add(right); }
+				if (right != null) { neighborNodes.Add(right); }
 
 				Node rightBottom = nodes.Find(n =>
 					n.GetScaledLocation(dungeon.scale).X == scaledPoint.X + 1 &&
 					n.GetScaledLocation(dungeon.scale).Y == scaledPoint.Y + 1);
-				if(rightBottom != null) { neighborNodes.Add(rightBottom); }
+				if (rightBottom != null) { neighborNodes.Add(rightBottom); }
 
 				return neighborNodes;
 			}

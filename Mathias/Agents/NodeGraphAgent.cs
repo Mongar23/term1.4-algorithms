@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Mathias.Utilities;
+using Debug = Mathias.Utilities.Debug;
 
 namespace Mathias.Agents
 {
@@ -19,8 +21,8 @@ namespace Mathias.Agents
 
 		public NodeGraphAgent(NodeGraphBase nodeGraph, GradeType gradeType) : base(nodeGraph)
 		{
-			System.Diagnostics.Stopwatch stopwatch = new ();
-			stopwatch.Start ();
+			Stopwatch stopwatch = new();
+			stopwatch.Start();
 
 			SetOrigin(width * 0.5f, height * 0.5f);
 
@@ -62,6 +64,8 @@ namespace Mathias.Agents
 			if (nodesToVisit.Count == 0)
 			{
 				nodesToVisit.Add(node);
+				if (AlgorithmsAssignment.Instance.ExtensiveLogging) { Debug.Log($"Queued {node}, queue length:1"); }
+
 				return;
 			}
 
@@ -70,6 +74,8 @@ namespace Mathias.Agents
 			if (nodesToVisit.Last() == node) { return; }
 
 			nodesToVisit.Add(node);
+
+			if (AlgorithmsAssignment.Instance.ExtensiveLogging) { Debug.Log($"Queued {node}, queue length:{nodesToVisit.Count}"); }
 		}
 
 		private void UpdateSufficient()
@@ -99,6 +105,8 @@ namespace Mathias.Agents
 
 			if (currentNode.connections.Contains(node)) // There is a direct connection to the target node.
 			{
+				if (AlgorithmsAssignment.Instance.ExtensiveLogging) { Debug.Log("Direct path found!"); }
+
 				endNode = node;
 				targetNode = endNode;
 				return;
@@ -112,6 +120,8 @@ namespace Mathias.Agents
 				AlgorithmsAssignment.Instance.Destroy();
 				return;
 			}
+
+			if (AlgorithmsAssignment.Instance.ExtensiveLogging) { Debug.Log("No direct path found, trying random node."); }
 			int randomNodeIndex = AlgorithmsAssignment.Instance.Random.Next(0, currentNode.connections.Count);
 			targetNode = currentNode.connections[randomNodeIndex];
 		}
@@ -137,7 +147,7 @@ namespace Mathias.Agents
 				return;
 			}
 
-			if(currentNode.connections.Count == 1) //Has only one direction to go to.
+			if (currentNode.connections.Count == 1) //Has only one direction to go to.
 			{
 				targetNode = currentNode.connections[0];
 				return;
